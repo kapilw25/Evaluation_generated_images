@@ -1,0 +1,6 @@
+.dvc
+.vscode
+1env
+/image_generated
+.dvcignore
+image_generated.dvc

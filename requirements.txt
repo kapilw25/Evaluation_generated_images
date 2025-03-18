@@ -1,0 +1,10 @@
+accelerate==1.0.1
+bitsandbytes==0.42.0  
+diffusers==0.33.0.dev0
+dvc
+huggingface-hub==0.27.0
+Pillow>=8.0.0
+protobuf==5.29.3
+sentencepiece==0.2.0
+torch>=1.12.0
+transformers>=4.26.0
