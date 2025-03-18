@@ -2,5 +2,10 @@
 .vscode
 1env
 /image_generated
+models
 .dvcignore
 image_generated.dvc
+PAT_Github.txt
+1_CV_stable_diffusion_v1_5.py
+2_CV_flux1_dev.py
+3_CV_sdxl_turbo.py
