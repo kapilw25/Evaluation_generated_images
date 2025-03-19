@@ -21,7 +21,7 @@ prompt = "A cat holding a sign that says hello world"
 # --------------------------------------- CV Model1: Stable Diffusion v1.5 ---------------------------------------
 model_sd_v1_5_path = "models/stable-diffusion-v1-5"
 
-#Download or load from Local
+#Download or load from Local "models" directory
 if not os.path.exists(model_sd_v1_5_path):
     pipe_sd_v1_5 = StableDiffusionPipeline.from_pretrained(
         "sd-legacy/stable-diffusion-v1-5",
