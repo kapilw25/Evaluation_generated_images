@@ -14,10 +14,6 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # Ensure the 'models' and 'image_generated' directories exist
 os.makedirs("image_generated", exist_ok=True)
 
-# remove manual model caching logic and rely on HF default cache directory
-if "HF_HOME" in os.environ:
-    del os.environ["HF_HOME"]
-
 # shared prompt
 prompts = ["A cat holding a sign that says hello world",
            "A futuristic city with flying cars",
@@ -67,6 +63,14 @@ for model_name, img_paths in images.items():
     gpu_memory = EvaluationMetrics.measure_gpu_memory()
     throughput = EvaluationMetrics.measure_throughput(inference_time * len(prompts), len(prompts))
     
+    # round off the scores to 1 decimal places
+    clip_scores = [round(score, 1) for score in clip_scores]
+    bleu_scores = [round(score, 1) for score in bleu_scores]
+    cosine_scores = [round(score, 1) for score in cosine_scores]        
+    inference_time = round(inference_time, 2)
+    gpu_memory = round(gpu_memory, 2)
+    throughput = round(throughput, 2)
+
     # print(f"{model_name} Metrics:")
     print(f"CLIP scores: {clip_scores}")
     print(f"BLEU scores: {bleu_scores}")
