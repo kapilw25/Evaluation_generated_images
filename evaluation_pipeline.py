@@ -53,7 +53,8 @@ for model_name, pipe in models.items():
         image_path = f"image_generated/{model_name}_image_{i}.jpg"
         image.save(image_path)
         images.setdefault(model_name, []).append(image_path)
-        
+   
+results = []        
 # ------------------------- Evaluation -------------------------
 for model_name, img_paths in images.items():
     generated_images = [Image.open(img).convert("RGB") for img  in img_paths] # PIL images
@@ -74,7 +75,6 @@ for model_name, img_paths in images.items():
     print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
     print(f"Throughput: {throughput:.2f} img/sec")
     
-    results = []
     # append results to a list for CSV export
     results.append({
         "Model": model_name,
