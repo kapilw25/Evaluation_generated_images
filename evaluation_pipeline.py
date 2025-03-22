@@ -1,8 +1,9 @@
 import torch
 from diffusers import StableDiffusionPipeline, AutoPipelineForText2Image
 import os
-from evaluation import EvaluationMetrics
+from evaluation_metrics import EvaluationMetrics
 from PIL import Image
+from torchvision import transforms
 
 # CLear GPU cache to free memory
 torch.cuda.empty_cache()
@@ -26,9 +27,9 @@ prompts = ["A cat holding a sign that says hello world",
 # -----CV model1: Stable Diffusion v1.5---------------------------------------
 pipe_sd_v1_5 = StableDiffusionPipeline.from_pretrained(
     "sd-legacy/stable-diffusion-v1-5",
-    torch_dtype= torch.float16
+    torch_dtype= torch.float16,
 )
-    
+
 pipe_sd_v1_5.enable_model_cpu_offload()   # Automatically offloads to CPU/GPU as needed
 
 # ----- CV Model2: SDXL Turbo ---------------------------------------
@@ -48,27 +49,29 @@ models = {
 images = {}
 for model_name, pipe in models.items():
     for i, prompt in enumerate(prompts):
-        image = pipe(prompt).images[0]
+        image = pipe(prompt).images[0] # PIL image
         image_path = f"image_generated/{model_name}_image_{i}.jpg"
         image.save(image_path)
         images.setdefault(model_name, []).append(image_path)
         
 # ------------------------- Evaluation -------------------------
-# for model_name, img_paths in images.items():
-#     generated_images = [Image.open(img) for img  in img_paths]
+for model_name, img_paths in images.items():
+    generated_images = [Image.open(img).convert("RGB") for img  in img_paths] # PIL images
+    # generated_images = [transforms.ToTensor()(Image.open(img).convert("RGB")).unsqueeze(0).to("cuda", dtype=torch.float16)
+    #                     for img  in img_paths]
     
 #     # Evaluation Metrics
-#     clip_scores = EvaluationMetrics.calculate_clip_score(generated_images, prompts[0])
-#     bleu_scores = EvaluationMetrics.calculate_bleu_score(prompts[0], prompts)
-#     cosine_scores = EvaluationMetrics.calculate_cosine_similarity(generated_images, prompts[0])
-#     inference_time = EvaluationMetrics.measure_inference_time(models[model_name], prompts)
+    clip_scores = EvaluationMetrics.calculate_clip_score(generated_images, prompts[0])
+    bleu_scores = EvaluationMetrics.calculate_bleu_score(prompts[0], prompts)
+    cosine_scores = EvaluationMetrics.calculate_cosine_similarity(generated_images, prompts[0])
+    # inference_time = EvaluationMetrics.measure_inference_time(models[model_name], prompts)
 #     gpu_memory = EvaluationMetrics.measure_gpu_memory()
 #     throughput = EvaluationMetrics.measure_throughput(inference_time * len(prompts), len(prompts))
     
 #     print(f"{model_name} Metrics:")
-#     print(f"CLIP scores: {clip_scores}")
-#     print(f"BLEU scores: {bleu_scores}")
-#     print(f" Cosine similarity Scores: {cosine_scores}")
-#     print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
+    print(f"CLIP scores: {clip_scores}")
+    print(f"BLEU scores: {bleu_scores}")
+    print(f" Cosine similarity Scores: {cosine_scores}")
+    # print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
 #     print(f"Inference Time: {inference_time:.2f} sec/image")
 #     print(f" Throughput: {throughput:.2f} img/sec")

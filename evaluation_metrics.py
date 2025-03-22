@@ -10,9 +10,11 @@ from sentence_transformers import SentenceTransformer, util
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 
 # Load models 
-clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to("cuda")
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32",)
-sbert_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+print(f"✅ CUDA Available: {torch.cuda.is_available()}")
+print(f"✅ CUDA Device: {torch.cuda.get_device_name(0)}")
 
 
 # ================================
@@ -28,9 +30,11 @@ class EvaluationMetrics:
             text=[prompt]*len(images),
             images=images,
             return_tensors="pt",
-            padding=True
-        )
-        outputs=  clip_model(**inputs)
+            padding=True,
+            do_rescale= False # fix to prevent double rescaling
+        ).to("cuda")
+        # print(f"✅ Tensor Device: {inputs.device}")
+        outputs=  clip_model(**inputs.to("cuda"))
         return outputs.logits_per_image[:,0].tolist()
     
     @staticmethod
@@ -46,13 +50,33 @@ class EvaluationMetrics:
         
     @staticmethod
     def calculate_cosine_similarity(images, prompt):
-        """Batch Calculation for cosine similarity"""
-        prompt_embedding = sbert_model.encode(prompt)
-        return [
-            float(util.pytorch_cos_sim(sbert_model.encode(img.resize((224,224))),
-                                       prompt_embedding).item())
-            for img in images
-        ]
+        """Batch Calculation for cosine similarity -- Using CLIP only"""
+
+        prompt_inputs = clip_processor(text=prompt, return_tensors="pt").to("cuda")
+        prompt_embedding = clip_model.get_text_features(**prompt_inputs)
+        print(f"✅ Tensor Device: {prompt_embedding.device}")
+        
+        cosine_scores = []
+        for img in images:
+            # encode image using CLIP
+            image_inputs = clip_processor(images=img, return_tensors="pt").to("cuda")
+            image_embedding = clip_model.get_image_features(**image_inputs)
+            
+            # Normalize embeddings for cosine similarity
+            prompt_embedding = prompt_embedding.to("cuda") / prompt_embedding.norm()
+            image_embedding = image_embedding.to("cuda") / image_embedding.norm()
+            
+            # Calculate Cosine Similarity
+            score = torch.nn.functional.cosine_similarity(
+                prompt_embedding,
+                image_embedding,
+                dim =-1 # compute cosine similarity along the last dimension
+            ).mean().item()
+            
+            cosine_scores.append(score)
+        
+        return cosine_scores
+            
         
     @staticmethod
     def measure_inference_time(model, prompts, height=512, width=512):
