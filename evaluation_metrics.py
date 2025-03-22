@@ -86,7 +86,7 @@ class EvaluationMetrics:
         for prompt in prompts:
             model(prompt, height=height, width=width)
         torch.cuda.synchronize()
-        return (time.time - start_time) / len(prompts)
+        return (time.time() - start_time) / len(prompts)
         
     @staticmethod
     def measure_gpu_memory():

@@ -1,6 +1,6 @@
 import torch
 from diffusers import StableDiffusionPipeline, AutoPipelineForText2Image
-import os
+import os, csv
 from evaluation_metrics import EvaluationMetrics
 from PIL import Image
 from torchvision import transforms
@@ -57,21 +57,40 @@ for model_name, pipe in models.items():
 # ------------------------- Evaluation -------------------------
 for model_name, img_paths in images.items():
     generated_images = [Image.open(img).convert("RGB") for img  in img_paths] # PIL images
-    # generated_images = [transforms.ToTensor()(Image.open(img).convert("RGB")).unsqueeze(0).to("cuda", dtype=torch.float16)
-    #                     for img  in img_paths]
     
-#     # Evaluation Metrics
+    # Evaluation Metrics
     clip_scores = EvaluationMetrics.calculate_clip_score(generated_images, prompts[0])
     bleu_scores = EvaluationMetrics.calculate_bleu_score(prompts[0], prompts)
     cosine_scores = EvaluationMetrics.calculate_cosine_similarity(generated_images, prompts[0])
-    # inference_time = EvaluationMetrics.measure_inference_time(models[model_name], prompts)
-#     gpu_memory = EvaluationMetrics.measure_gpu_memory()
-#     throughput = EvaluationMetrics.measure_throughput(inference_time * len(prompts), len(prompts))
+    inference_time = EvaluationMetrics.measure_inference_time(models[model_name], prompts)
+    gpu_memory = EvaluationMetrics.measure_gpu_memory()
+    throughput = EvaluationMetrics.measure_throughput(inference_time * len(prompts), len(prompts))
     
-#     print(f"{model_name} Metrics:")
+    # print(f"{model_name} Metrics:")
     print(f"CLIP scores: {clip_scores}")
     print(f"BLEU scores: {bleu_scores}")
     print(f" Cosine similarity Scores: {cosine_scores}")
-    # print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
-#     print(f"Inference Time: {inference_time:.2f} sec/image")
-#     print(f" Throughput: {throughput:.2f} img/sec")
+    print(f"Inference Time: {inference_time:.2f} sec/image")
+    print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
+    print(f"Throughput: {throughput:.2f} img/sec")
+    
+    results = []
+    # append results to a list for CSV export
+    results.append({
+        "Model": model_name,
+        "CLIP_scores": ";".join(map(str, clip_scores)),
+        "BLEU_scores": ";".join(map(str, bleu_scores)),
+        "Cosine_similarity_scores": ";".join(map(str, cosine_scores)),
+        "Inference_Time": inference_time,
+        "GPU_Memory_Usage": gpu_memory,
+        "Throughput": throughput
+    })
+    
+# write results into a CSV file
+with open("evaluation_results.csv", "w", newline="") as csvfile:
+    fieldnames = ["Model", "CLIP_scores", "BLEU_scores", "Cosine_similarity_scores", "Inference_Time", "GPU_Memory_Usage", "Throughput"]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    for row in results:
+        writer.writerow(row)
+    
