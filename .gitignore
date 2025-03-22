@@ -1,7 +1,6 @@
 .dvc
 .vscode
 1env
-/image_generated
 models
 PAT_Github.txt
 1_CV_stable_diffusion_v1_5.py
