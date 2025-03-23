@@ -1,12 +1,3 @@
-import warnings
-
-# Suppress the 'use_column_width' deprecation warning
-warnings.filterwarnings(
-    "ignore",
-    message=".*deprecated*",
-    category=UserWarning,
-)
-
 import streamlit as st
 import pandas as pd
 from PIL import Image
@@ -78,7 +69,7 @@ for prompt in prompts:
         
         # Display the image and metrics
         with columns[col_index]:
-            st.image(Image.open(image_path), caption=f"**{model_name}**", use_column_width=True)
+            st.image(Image.open(image_path), caption=f"**{model_name}**", use_container_width=True)
             st.write(f"**CLIP Score**: {clip_score}")
             st.write(f"**BLEU Score**: {bleu_score}")
             st.write(f"**Cosine Similarity**: {cos_score}")
