@@ -1,3 +1,12 @@
+import warnings
+
+# Suppress the 'use_column_width' deprecation warning
+warnings.filterwarnings(
+    "ignore",
+    message=".*use_column_width parameter has been deprecated.*",
+    category=UserWarning,
+)
+
 import streamlit as st
 import pandas as pd
 from PIL import Image

@@ -12,6 +12,7 @@ protobuf==5.29.3
 psutil
 sentencepiece==0.2.0
 sentence-transformers
+streamlit
 torch==2.2.1
 torchvision==0.17.1
 transformers>=4.26.0
