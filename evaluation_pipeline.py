@@ -50,49 +50,61 @@ for model_name, pipe in models.items():
         image.save(image_path)
         images.setdefault(model_name, []).append(image_path)
    
-results = []        
 # ------------------------- Evaluation -------------------------
-for model_name, img_paths in images.items():
-    generated_images = [Image.open(img).convert("RGB") for img  in img_paths] # PIL images
-    
-    # Evaluation Metrics
-    clip_scores = EvaluationMetrics.calculate_clip_score(generated_images, prompts[0])
-    bleu_scores = EvaluationMetrics.calculate_bleu_score(prompts[0], prompts)
-    cosine_scores = EvaluationMetrics.calculate_cosine_similarity(generated_images, prompts[0])
-    inference_time = EvaluationMetrics.measure_inference_time(models[model_name], prompts)
-    gpu_memory = EvaluationMetrics.measure_gpu_memory()
-    throughput = EvaluationMetrics.measure_throughput(inference_time * len(prompts), len(prompts))
-    
-    # round off the scores to 1 decimal places
-    clip_scores = [round(score, 1) for score in clip_scores]
-    bleu_scores = [round(score, 1) for score in bleu_scores]
-    cosine_scores = [round(score, 1) for score in cosine_scores]        
-    inference_time = round(inference_time, 2)
-    gpu_memory = round(gpu_memory, 2)
-    throughput = round(throughput, 2)
+results = []  # to store evaluation metrics for CSV export
 
-    # print(f"{model_name} Metrics:")
-    print(f"CLIP scores: {clip_scores}")
-    print(f"BLEU scores: {bleu_scores}")
-    print(f" Cosine similarity Scores: {cosine_scores}")
-    print(f"Inference Time: {inference_time:.2f} sec/image")
-    print(f"GPU Memory Usage: {gpu_memory:.2f} MB")
-    print(f"Throughput: {throughput:.2f} img/sec")
+for model_name, img_paths in images.items():
+    # Load images as PIL images (CLIPProcessor accepts PIL images directly)
+    # generated_images = [Image.open(img).convert("RGB") for img  in img_paths]
+    # for each mode, each image corresponds to the prompt with the same index
+    for i, img_path in enumerate(img_paths):
+        gen_img = Image.open(img_path).convert("RGB")
+        gen_prompt = prompts[i]
     
-    # append results to a list for CSV export
-    results.append({
-        "Model": model_name,
-        "CLIP_scores": ";".join(map(str, clip_scores)),
-        "BLEU_scores": ";".join(map(str, bleu_scores)),
-        "Cosine_similarity_scores": ";".join(map(str, cosine_scores)),
-        "Inference_Time": inference_time,
-        "GPU_Memory_Usage": gpu_memory,
-        "Throughput": throughput
-    })
-    
+        # Evaluation Metrics
+        clip_score = round(EvaluationMetrics.calculate_clip_score([gen_img], gen_prompt)[0], 1)
+        bleu_score = round(EvaluationMetrics.calculate_bleu_score(gen_prompt, [gen_prompt])[0], 1) # except 1.0 if identical
+        cosine_score = round(EvaluationMetrics.calculate_cosine_similarity([gen_img], gen_prompt)[0], 1)
+        inference_time = round(EvaluationMetrics.measure_inference_time(models[model_name], [gen_prompt]), 1)
+        gpu_memory = round(EvaluationMetrics.measure_gpu_memory(), 1)
+        throughput = round(EvaluationMetrics.measure_throughput(inference_time, 1), 1)
+
+        print(f"Model: {model_name}, Image Index: {i}")
+        print(f"Prompt: {gen_prompt}")
+        print(f"CLIP score: {clip_score}")
+        print(f"BLEU score: {bleu_score}")
+        print(f" Cosine similarity Score: {cosine_score}")
+        print(f"Inference Time: {inference_time} sec/image")
+        print(f"GPU Memory Usage: {gpu_memory} MB")
+        print(f"Throughput: {throughput} img/sec")
+        
+        # append results to a list for CSV export
+        results.append({
+            "Model": model_name,
+            "Image_Index": i,
+            "Prompt": gen_prompt,
+            "CLIP score": clip_score,
+            "BLEU score": bleu_score,
+            "Cosine similarity score": cosine_score,
+            "Inference Time (sec/image)": inference_time,
+            "GPU Memory Usage (MB)": gpu_memory,
+            "Throughput (img/sec)": throughput
+        })
+            
 # write results into a CSV file
+fieldnames = [
+    "Model",
+    "Image_Index",
+    "Prompt",
+    "CLIP score",
+    "BLEU score",
+    "Cosine similarity score",
+    "Inference Time (sec/image)",
+    "GPU Memory Usage (MB)",
+    "Throughput (img/sec)"
+]
+
 with open("evaluation_results.csv", "w", newline="") as csvfile:
-    fieldnames = ["Model", "CLIP_scores", "BLEU_scores", "Cosine_similarity_scores", "Inference_Time", "GPU_Memory_Usage", "Throughput"]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     for row in results:
