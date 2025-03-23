@@ -3,7 +3,7 @@ import warnings
 # Suppress the 'use_column_width' deprecation warning
 warnings.filterwarnings(
     "ignore",
-    message=".*use_column_width parameter has been deprecated.*",
+    message=".*deprecated*",
     category=UserWarning,
 )
 
