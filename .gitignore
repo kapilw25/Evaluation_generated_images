@@ -8,5 +8,6 @@ PAT_Github.txt
 1_CV_stable_diffusion_v1_5.py
 2_CV_flux1_dev.py
 3_CV_sdxl_turbo.py
+combined_CV.py
 gdrive_creds.json
 gdrive_service_account_key.json
