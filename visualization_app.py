@@ -63,8 +63,8 @@ with tab1:
         # Extract image index and other metrics
         image_index = int(row_data["Image_Index"])
         clip_score = row_data[col_clip]
-        bleu_score = row[col_bleu]
-        cos_score = row[col_cos]
+        bleu_score = row_data[col_bleu]
+        cos_score = row_data[col_cos]
         
         # Construct Expected filename
         image_filename = f"{model_name}_image_{image_index}.jpg"
