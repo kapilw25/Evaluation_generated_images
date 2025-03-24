@@ -1,5 +1,7 @@
+__pycache__
 .dvc
 .vscode
+.dvcignore
 1env
 models
 PAT_Github.txt
