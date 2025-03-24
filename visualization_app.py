@@ -23,9 +23,11 @@ if not os.path.exists(image_dir):
 df = pd.read_csv(csv_file)
 
 # create 2 tabs:
-tab1, tab2 = st.tabs([
+tab1, tab2, tab3 = st.tabs([
     "Compare Images",
-    "Evaluation Metrics"
+    "Evaluation Metrics",
+    "Disclaimer"
+    
 ])
 
 # --------------------------------------------------- Tab1: Compare Image  --------------------------------------------------- 
@@ -94,3 +96,22 @@ with tab1:
 with tab2:
     st.subheader("Evaluation Metrics")
     st.dataframe(df)
+    
+# --------------------------------------------------- Tab3: "Disclaimer"  --------------------------------------------------- 
+with tab3:
+    st.subheader("Disclaimer and Project Structure")
+    st.markdown("""
+**Disclaimer:** This app is for display purposes only. All images are generated on a local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM.
+
+**Project Structure:**
+- **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
+  Contains functions to calculate evaluation metrics for text-to-image outputs.
+- **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
+  Generates images using text-to-image models and computes evaluation metrics, saving results to CSV.
+- **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_results.csv)**  
+  CSV file that stores all computed evaluation metrics.
+- **[visualization_app.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/visualization_app.py)**  
+  Streamlit app that visualizes the generated images and evaluation metrics.
+- **[image_generated/](https://github.com/kapilw25/Evaluation_generated_images/blob/main/image_generated)**  
+  Directory containing the generated images.
+    """, unsafe_allow_html=True)

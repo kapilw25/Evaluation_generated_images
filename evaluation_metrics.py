@@ -13,8 +13,8 @@ from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to("cuda")
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32",)
 
-print(f"✅ CUDA Available: {torch.cuda.is_available()}")
-print(f"✅ CUDA Device: {torch.cuda.get_device_name(0)}")
+print(f" CUDA Available: {torch.cuda.is_available()}")
+print(f" CUDA Device: {torch.cuda.get_device_name(0)}")
 
 
 # ================================
@@ -33,7 +33,7 @@ class EvaluationMetrics:
             padding=True,
             do_rescale= False # fix to prevent double rescaling
         ).to("cuda")
-        # print(f"✅ Tensor Device: {inputs.device}")
+        # print(f" Tensor Device: {inputs.device}")
         outputs=  clip_model(**inputs.to("cuda"))
         return outputs.logits_per_image[:,0].tolist()
     
@@ -54,7 +54,7 @@ class EvaluationMetrics:
 
         prompt_inputs = clip_processor(text=prompt, return_tensors="pt").to("cuda")
         prompt_embedding = clip_model.get_text_features(**prompt_inputs)
-        print(f"✅ Tensor Device: {prompt_embedding.device}")
+        print(f" Tensor Device: {prompt_embedding.device}")
         
         cosine_scores = []
         for img in images:
