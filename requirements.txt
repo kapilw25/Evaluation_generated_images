@@ -3,8 +3,9 @@ bitsandbytes==0.42.0
 diffusers==0.32.2
 dvc
 dvc_gdrive
+dotenv
 fsspec[http]==2024.9.0
-huggingface-hub==0.27.0
+huggingface-hub
 nltk
 optimum
 Pillow>=8.0.0

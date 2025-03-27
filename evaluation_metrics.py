@@ -31,28 +31,21 @@ class EvaluationMetrics:
             images=images,
             return_tensors="pt",
             padding=True,
+            truncation=True,
             do_rescale= False # fix to prevent double rescaling
         ).to("cuda")
         # print(f" Tensor Device: {inputs.device}")
         outputs=  clip_model(**inputs.to("cuda"))
         return outputs.logits_per_image[:,0].tolist()
-    
-    @staticmethod
-    def calculate_bleu_score(reference_text, generated_texts):
-        """Batch Calculation for BLEU score"""
-        reference = [reference_text.lower().split()]
-        smooth_fn = SmoothingFunction().method1
-        return [
-            sentence_bleu(reference,
-                        text.lower().split(),
-                        smoothing_function = smooth_fn)
-                for text in generated_texts]
         
     @staticmethod
     def calculate_cosine_similarity(images, prompt):
         """Batch Calculation for cosine similarity -- Using CLIP only"""
 
-        prompt_inputs = clip_processor(text=prompt, return_tensors="pt").to("cuda")
+        prompt_inputs = clip_processor(text=prompt, 
+                                       padding=True,
+                                       truncation=True,
+                                       return_tensors="pt").to("cuda")
         prompt_embedding = clip_model.get_text_features(**prompt_inputs)
         print(f" Tensor Device: {prompt_embedding.device}")
         
@@ -78,22 +71,17 @@ class EvaluationMetrics:
         return cosine_scores
             
         
-    @staticmethod
-    def measure_inference_time(model, prompts, height=512, width=512):
-        """Measures inference time in batch mode"""
-        torch.cuda.synchronize()
-        start_time = time.time()
-        for prompt in prompts:
-            model(prompt, height=height, width=width)
-        torch.cuda.synchronize()
-        return (time.time() - start_time) / len(prompts)
-        
-    @staticmethod
-    def measure_gpu_memory():
-        """Tracks peak GPU memory usage (MB)"""
-        return torch.cuda.max_memory_allocated() / (1024*1024)
+    # @staticmethod
+    # def measure_inference_time(model, prompts, height=512, width=512):
+    #     """Measures inference time in batch mode"""
+    #     torch.cuda.synchronize()
+    #     start_time = time.time()
+    #     for prompt in prompts:
+    #         model(prompt, height=height, width=width)
+    #     torch.cuda.synchronize()
+    #     return (time.time() - start_time) / len(prompts)
     
-    @staticmethod
-    def measure_throughput(total_time, total_images):
-        """Calculate throughput as images per second"""
-        return total_images / total_time if total_time > 0 else 0
+    # @staticmethod
+    # def measure_throughput(total_time, total_images):
+    #     """Calculate throughput as images per second"""
+    #     return total_images / total_time if total_time > 0 else 0
