@@ -3,7 +3,7 @@ import pandas as pd
 from PIL import Image
 import os
 
-st.title("Text-to-Image Models Evaluation Dashboard")
+st.title("MultiModal Recommendation for Text-to-Image Generation")
 
 csv_file = "evaluation_results.csv"
 image_dir = "image_generated"
@@ -34,7 +34,6 @@ tab1, tab2, tab3 = st.tabs([
 with tab1:
     # Make sure these names match exactly with pipeline's CSV headers
     col_clip = "CLIP score"
-    col_bleu = "BLEU score"
     col_cos = "Cosine similarity score"
         
     # Extract Unique prompts from the CSV
@@ -65,12 +64,12 @@ with tab1:
         # Extract image index and other metrics
         image_index = int(row_data["Image_Index"])
         clip_score = row_data[col_clip]
-        bleu_score = row_data[col_bleu]
         cos_score = row_data[col_cos]
         
-        # Construct Expected filename
-        image_filename = f"{model_name}_image_{image_index}.jpg"
+        # Retrieve the generated filename from the CSV
+        image_filename = row_data["Filename"]
         image_path = os.path.join(image_dir, image_filename)
+
         
         # check if file exists
         if not os.path.exists(image_path):
@@ -86,7 +85,6 @@ with tab1:
         st.image(Image.open(image_path), use_container_width=True)
         
         st.write(f"**CLIP Score**: {clip_score}")
-        st.write(f"**BLEU Score**: {bleu_score}")
         st.write(f"**Cosine Similarity**: {cos_score}")
                 
     st.write("---")
@@ -94,8 +92,14 @@ with tab1:
 
 # --------------------------------------------------- Tab2: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
-    st.subheader("Evaluation Metrics")
-    st.dataframe(df)
+    st.subheader("Evaluation Metrics - Per-Model Results")
+    df1 = pd.read_csv("evaluation_results.csv")
+    st.dataframe(df1)
+
+    st.subheader("Evaluation Metrics - Retrieval & FID Results")
+    df2 = pd.read_csv("evaluation_retrieval_fid_results.csv")
+    st.dataframe(df2)
+
     
 # --------------------------------------------------- Tab3: "Disclaimer"  --------------------------------------------------- 
 with tab3:

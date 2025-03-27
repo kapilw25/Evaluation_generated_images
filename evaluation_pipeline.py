@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 import os, csv, time, re
-from evaluation_metrics import EvaluationMetrics
+from evaluation_metrics_2 import EvaluationMetrics
 from PIL import Image
 from tqdm import tqdm
 
@@ -40,9 +40,9 @@ api_key = os.getenv("HF_API_KEY")
 
 # List of models and providers
 models = [
-    {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5", "generated_image": "stable_diffusion_OP.png"},
-    {"provider": "fal-ai", "model": "THUDM/CogView4-6B", "generated_image": "CogView4_OP.png"},
-    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev", "generated_image": "FLUX1_OP.png"},
+    {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5"},
+    {"provider": "fal-ai", "model": "THUDM/CogView4-6B"},
+    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"},
 ]
 
 def sanitize_filename(name):
@@ -107,24 +107,97 @@ for model_name, img_paths in images.items():
             "Prompt": gen_prompt,
             "CLIP score": clip_score,
             "Cosine similarity score": cosine_score,
-            # "Inference Time (sec/image)": inference_time,
-            # "Throughput (img/sec)": throughput
+            "Filename": os.path.basename(img_path)
         })
             
-# write results into a CSV file
+# Write per-model evaluation results into a CSV file
 fieldnames = [
     "Model",
     "Image_Index",
     "Prompt",
     "CLIP score",
     "Cosine similarity score",
-    # "Inference Time (sec/image)",
-    # "Throughput (img/sec)"
+    "Filename",
 ]
-
 with open("evaluation_results.csv", "w", newline="") as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
     for row in results:
         writer.writerow(row)
+
+# -----------------------------------------------------
+# Now, calculate retrieval metrics (Precision@K, Recall@K, MRR)
+# for each prompt (across all models)
+retrieval_results = []
+# Iterate over each prompt in prompt_items (list of tuples: (ground_truth_filename, prompt))
+for gt_filename, prompt in prompt_items:
+    gt_path = os.path.join("DeepFashion/images", gt_filename)
+    if not os.path.exists(gt_path):
+        print(f"Ground truth image not found: {gt_filename}")
+        continue
+    gt_img = Image.open(gt_path).convert("RGB")
+    
+    candidate_imgs = []
+    # For each model, if an image for this prompt exists, add it as candidate
+    for model_key, paths in images.items():
+        if len(paths) > 0:
+            # Assume the order of images corresponds to the order of prompt_items
+            index = prompt_items.index((gt_filename, prompt))
+            if index < len(paths):
+                candidate_imgs.append(Image.open(paths[index]).convert("RGB"))
+    if not candidate_imgs:
+        continue
+    
+    metrics = EvaluationMetrics.compute_precision_recall_mrr(gt_img, candidate_imgs, k=3)
+    retrieval_results.append({
+        "Metric_Type": "Retrieval",
+        "Prompt": prompt,
+        "Precision@K": round(metrics["precision@k"], 3),
+        "Recall@K": round(metrics["recall@k"], 3),
+        "MRR": round(metrics["mrr"], 3),
+        "FID": ""
+    })
+
+# -----------------------------------------------------
+# Now, calculate FID score across all real images vs. generated images.
+real_images = []
+real_dir = "DeepFashion/images"
+for file in os.listdir(real_dir):
+    if file.lower().endswith((".jpg", ".jpeg", ".png")):
+        real_images.append(Image.open(os.path.join(real_dir, file)).convert("RGB"))
+
+gen_images = []
+gen_dir = "image_generated"
+for file in os.listdir(gen_dir):
+    if file.lower().endswith((".jpg", ".jpeg", ".png")):
+        gen_images.append(Image.open(os.path.join(gen_dir, file)).convert("RGB"))
+
+fid_value = EvaluationMetrics.calculate_fid(real_images, gen_images)
+fid_result = {
+    "Metric_Type": "FID",
+    "Prompt": "",
+    "Precision@K": "",
+    "Recall@K": "",
+    "MRR": "",
+    "FID": round(fid_value, 3)
+}
+
+# -----------------------------------------------------
+# Combine retrieval results and FID result, and write to a new CSV file
+combined_fieldnames = [
+    "Metric_Type",
+    "Prompt",
+    "Precision@K",
+    "Recall@K",
+    "MRR",
+    "FID"
+]
+
+with open("evaluation_retrieval_fid_results.csv", "w", newline="") as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=combined_fieldnames)
+    writer.writeheader()
+    for row in retrieval_results:
+        writer.writerow(row)
+    writer.writerow(fid_result)
+
     

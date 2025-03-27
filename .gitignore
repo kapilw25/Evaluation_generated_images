@@ -12,6 +12,7 @@ PAT_Github.txt
 3_CV_sdxl_turbo.py
 4_CV_CogView4_6B.py
 5_HF_API.py
+6_metrics.py
 combined_CV.py
 gdrive_creds.json
 gdrive_service_account_key.json
