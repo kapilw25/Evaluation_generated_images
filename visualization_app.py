@@ -29,7 +29,7 @@ df = pd.read_csv(csv_file)
 tab1, tab2, tab3 = st.tabs([
     "Compare Images",
     "Evaluation Metrics",
-    "Disclaimer"
+    "Project Structure"
     
 ])
 
@@ -124,11 +124,9 @@ with tab2:
     
 # --------------------------------------------------- Tab3: "Disclaimer"  --------------------------------------------------- 
 with tab3:
-    st.subheader("Disclaimer and Project Structure")
-    st.markdown("""
-**Disclaimer:** This app is for display purposes only. All images are generated on a local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM.
 
-**Project Structure:**
+    st.subheader("Project Structure")
+    st.markdown("""
 - **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
   Contains functions to calculate evaluation metrics for text-to-image outputs.
 - **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
@@ -140,3 +138,11 @@ with tab3:
 - **[image_generated/](https://github.com/kapilw25/Evaluation_generated_images/blob/main/image_generated)**  
   Directory containing the generated images.
     """, unsafe_allow_html=True)
+    
+    st.subheader("System Architecture")
+    # st.image("README_files/architechture.png", use_container_width=True)
+    
+    st.subheader("Disclaimer")
+    st.markdown("""
+**Disclaimer:** This app is for education, research and display purposes only. All images are generated via huggingface API and CLIP based evaluation with  local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
+    """)

@@ -1,5 +1,5 @@
-![architechture]()
+![visualization_app](README_files/demo.png)
 
-![visualization_app](README_files/streamlit_v1.png)
+![architechture](README_files/architechture.png)
 
-![evaluation_results](README_files/evaluation_results.png)
+![evaluation_results](README_files/evaluation_results.png)s
