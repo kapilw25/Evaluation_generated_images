@@ -1,12 +1,15 @@
 import streamlit as st
 import pandas as pd
 from PIL import Image
-import os
+import os, ast
+
+st.set_page_config(layout="wide")
 
 st.title("MultiModal Recommendation for Text-to-Image Generation")
 
 csv_file = "evaluation_results.csv"
 image_dir = "image_generated"
+ground_truth_images = "DeepFashion/images"
 
 # check is CSV and images directory exist
 if not os.path.exists(csv_file):
@@ -41,52 +44,68 @@ with tab1:
 
     # dropdown to select which prompt to display
     selected_prompt = st.selectbox("Select a prompt:", prompts)
-
+    
+    parsed_prompt = ast.literal_eval(selected_prompt)
+    gt_filename = parsed_prompt[0]
+    prompt_text = parsed_prompt[1]
+    
+    # show ground-truth image
+    gt_path = os.path.join(ground_truth_images, gt_filename)
+    
     # Filter DataFrame by the chosen prompt
     filtered_df = df[df["Prompt"] == selected_prompt]
 
-    # show the selected Prompt as a heading
-    st.markdown(f"## Prompt: **{selected_prompt}**")
-
     # For each model in the filtered DataFrame, vertical display the image + metrics
     models_for_prompt = filtered_df["Model"].unique()
-
+    
+    # Resize function to unify image sizes
+    def resize_image(img, size=(768, 1024)):
+      return img.resize(size)
+    
+    # gather all images (ground truth + generated) into a list
+    images_to_display = []
+    
+    # ground truth first
+    if os.path.exists(gt_path):
+      gt_img = Image.open(gt_path).convert("RGB")
+      gt_img = resize_image(gt_img)
+      images_to_display.append(("Ground Truth from DeepFashion Dataset", gt_img))
+    else:
+      st.warning(f"Ground Truth image not found: {gt_filename}")
+      
+    # then each model's generated image
     for model_name in models_for_prompt:
-        row = filtered_df[filtered_df["Model"] == model_name]
+      row = filtered_df[filtered_df["Model"]==model_name]
+      if row.empty:
+        continue
+      row_data = row.iloc[0]
+      image_filename = row_data["Filename"]
+      image_path = os.path.join(image_dir, image_filename)
+      if os.path.exists(image_path):
+        gen_img = Image.open(image_path).convert("RGB")
+        gen_img = resize_image(gen_img)
+        images_to_display.append((model_name, gen_img))
         
-        if row.empty:
-            st.warning(f"No data for {model_name} & {selected_prompt}")
-            continue
-        
-        # we assume each (model, prompt) is a single row >> use.iloc[0]
-        row_data = row.iloc[0]
-        
-        # Extract image index and other metrics
-        image_index = int(row_data["Image_Index"])
-        clip_score = row_data[col_clip]
-        cos_score = row_data[col_cos]
-        
-        # Retrieve the generated filename from the CSV
-        image_filename = row_data["Filename"]
-        image_path = os.path.join(image_dir, image_filename)
-
-        
-        # check if file exists
-        if not os.path.exists(image_path):
-            st.error(f"Image not found: {image_filename}")
-            continue
-        
-        # Enlarge model name text via HTML styling
-        st.markdown(
-            f"<h3 style='font-size:24px; color:#2e5f9c;'>{model_name}</h3>",
-            unsafe_allow_html=True
-        )
-        
-        st.image(Image.open(image_path), use_container_width=True)
-        
-        st.write(f"**CLIP Score**: {clip_score}")
-        st.write(f"**Cosine Similarity**: {cos_score}")
-                
+      
+    # display images in a grid
+    cols_per_row = 3
+    rows_needed = (len(images_to_display) + cols_per_row -1 )//cols_per_row
+    
+    index = 0
+    for _ in range(rows_needed):
+      cols = st.columns(cols_per_row)
+      for col_i in range(cols_per_row):
+        if index < len(images_to_display):
+          model_title, img_obj = images_to_display[index]
+          with cols[col_i]:
+                st.markdown(
+                    f"<h3 style='font-size:24px; color:#2e5f9c;'>{model_title}</h3>",
+                    unsafe_allow_html=True
+                )
+                st.image(img_obj, use_container_width=True)
+          index += 1
+           
+    st.markdown(f"<p style='font-size:14px;'>{prompt_text}</p>", unsafe_allow_html=True)
     st.write("---")
     st.markdown("**End of Comparison**")
 
