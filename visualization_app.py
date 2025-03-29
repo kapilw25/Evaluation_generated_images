@@ -111,13 +111,15 @@ with tab1:
 
 # --------------------------------------------------- Tab2: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
-    st.subheader("Evaluation Metrics - Per-Model Results")
-    df1 = pd.read_csv("evaluation_results.csv")
-    st.dataframe(df1)
-
     st.subheader("Evaluation Metrics - Retrieval & FID Results")
-    df2 = pd.read_csv("evaluation_retrieval_fid_results.csv")
+    df1 = pd.read_csv("evaluation_retrieval_fid_results.csv")
+    st.dataframe(df1)  
+
+    st.subheader("Evaluation Metrics - Per-Model Results")
+    df2 = pd.read_csv("evaluation_results.csv")
     st.dataframe(df2)
+
+
 
     
 # --------------------------------------------------- Tab3: "Disclaimer"  --------------------------------------------------- 

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
 import os, csv, time, re
-from evaluation_metrics_2 import EvaluationMetrics
+from evaluation_metrics import EvaluationMetrics
 from PIL import Image
 from tqdm import tqdm
 
@@ -90,15 +90,11 @@ for model_name, img_paths in images.items():
         # Evaluation Metrics
         clip_score = round(EvaluationMetrics.calculate_clip_score([gen_img], gen_prompt)[0], 1)
         cosine_score = round(EvaluationMetrics.calculate_cosine_similarity([gen_img], gen_prompt)[0], 1)
-        # inference_time = round(EvaluationMetrics.measure_inference_time(models[model_name], [gen_prompt]), 1)
-        # throughput = round(EvaluationMetrics.measure_throughput(inference_time, 1), 1)
 
         print(f"Model: {model_name}, Image Index: {i}")
         print(f"Prompt: {gen_prompt}")
         print(f"CLIP score: {clip_score}")
         print(f" Cosine similarity Score: {cosine_score}")
-        # print(f"Inference Time: {inference_time} sec/image")
-        # print(f"Throughput: {throughput} img/sec")
         
         # append results to a list for CSV export
         results.append({
