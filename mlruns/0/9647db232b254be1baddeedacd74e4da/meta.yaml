@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/9647db232b254be1baddeedacd74e4da/artifacts
+end_time: 1743486939512
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9647db232b254be1baddeedacd74e4da
+run_name: Evaluation Run
+run_uuid: 9647db232b254be1baddeedacd74e4da
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743486900887
+status: 3
+tags: []
+user_id: 016649880

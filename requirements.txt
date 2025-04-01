@@ -1,11 +1,14 @@
 accelerate==1.0.1
 bitsandbytes==0.42.0  
+git+https://github.com/GaParmar/clean-fid.git
 diffusers==0.32.2
 dvc
 dvc_gdrive
 dotenv
 fsspec[http]==2024.9.0
 huggingface-hub
+lpips
+mlflow
 nltk
 optimum
 Pillow>=8.0.0

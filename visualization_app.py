@@ -2,61 +2,74 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 import os, ast
+import subprocess
+import time
 
 st.set_page_config(layout="wide")
 
 st.title("MultiModal Recommendation for Text-to-Image Generation")
 
-csv_file = "evaluation_results.csv"
+if "mlflow_started" not in st.session_state:
+  subprocess.Popen(["mlflow", "ui", "--port", "5050", "--backend-store-uri", "mlruns"])
+  time.sleep(3) # giving the MLflow UI time to start
+  st.session_state.mlflow_started = True
+
+gen_img_metadata = "image_generated/gen_img_metadata.csv"
+# Generated image metadata column names: ['model', 'image_key', 'prompt', 'gen_img_path']
+
 image_dir = "image_generated"
+  
 ground_truth_images = "DeepFashion/images"
 
 # check is CSV and images directory exist
-if not os.path.exists(csv_file):
-    st.error(f"{csv_file} not found.")
+if not os.path.exists(gen_img_metadata):
+    st.error(f"{gen_img_metadata} not found.")
     st.stop()
     
 # Ensure that "image_generated" folder exists
-
 if not os.path.exists(image_dir):
     st.error(f"{image_dir} folder not found")
     st.stop()
     
 # Load CSV
-df = pd.read_csv(csv_file)
+# df = pd.read_csv(csv_file)
+df = pd.read_csv(gen_img_metadata)
+
 
 # create 2 tabs:
-tab1, tab2, tab3 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Compare Images",
     "Evaluation Metrics",
-    "Project Structure"
-    
+    "MLflow UI",
+    "Project Structure",
+    "Disclaimer"
 ])
 
 # --------------------------------------------------- Tab1: Compare Image  --------------------------------------------------- 
-with tab1:
-    # Make sure these names match exactly with pipeline's CSV headers
-    col_clip = "CLIP score"
-    col_cos = "Cosine similarity score"
-        
+with tab1:        
     # Extract Unique prompts from the CSV
-    prompts = sorted(df["Prompt"].unique())
+    prompts = sorted(df["prompt"].unique())
 
     # dropdown to select which prompt to display
     selected_prompt = st.selectbox("Select a prompt:", prompts)
     
-    parsed_prompt = ast.literal_eval(selected_prompt)
-    gt_filename = parsed_prompt[0]
-    prompt_text = parsed_prompt[1]
+    filtered_df = df[df["prompt"] == selected_prompt]
+    if not filtered_df.empty:
+      gt_filename = filtered_df.iloc[0]["image_key"]
+      prompt_text = selected_prompt
+    else:
+      st.error("No data found for the selected prompt")
+      st.stop()
+    
     
     # show ground-truth image
     gt_path = os.path.join(ground_truth_images, gt_filename)
     
     # Filter DataFrame by the chosen prompt
-    filtered_df = df[df["Prompt"] == selected_prompt]
+    filtered_df = df[df["prompt"] == selected_prompt]
 
     # For each model in the filtered DataFrame, vertical display the image + metrics
-    models_for_prompt = filtered_df["Model"].unique()
+    models_for_prompt = filtered_df["model"].unique()
     
     # Resize function to unify image sizes
     def resize_image(img, size=(768, 1024)):
@@ -75,12 +88,13 @@ with tab1:
       
     # then each model's generated image
     for model_name in models_for_prompt:
-      row = filtered_df[filtered_df["Model"]==model_name]
+      row = filtered_df[filtered_df["model"]==model_name]
       if row.empty:
         continue
       row_data = row.iloc[0]
-      image_filename = row_data["Filename"]
-      image_path = os.path.join(image_dir, image_filename)
+      # image_filename = row_data["Filename"]
+      # image_path = os.path.join(image_dir, image_filename)
+      image_path = row_data["gen_img_path"]
       if os.path.exists(image_path):
         gen_img = Image.open(image_path).convert("RGB")
         gen_img = resize_image(gen_img)
@@ -111,19 +125,18 @@ with tab1:
 
 # --------------------------------------------------- Tab2: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
-    st.subheader("Evaluation Metrics - Retrieval & FID Results")
-    df1 = pd.read_csv("evaluation_retrieval_fid_results.csv")
-    st.dataframe(df1)  
-
     st.subheader("Evaluation Metrics - Per-Model Results")
-    df2 = pd.read_csv("evaluation_results.csv")
-    st.dataframe(df2)
-
-
-
+    df1 = pd.read_csv("results/evaluation_results.csv")
+    st.dataframe(df1)
     
-# --------------------------------------------------- Tab3: "Disclaimer"  --------------------------------------------------- 
+# --------------------------------------------------- Tab3: "MLflow UI"  --------------------------------------------------- 
 with tab3:
+  st.subheader("Models' Performance analysis via Mlflow")
+  st.markdown("Live experiment tracking and comaprison across model/prompt combinations. The MLflow UI is embedded below.")
+  st.components.v1.iframe("http://localhost:5050", height=1200, scrolling=True)
+
+# --------------------------------------------------- Tab4: "Project Structure"  --------------------------------------------------- 
+with tab4:
 
     st.subheader("Project Structure")
     st.markdown("""
@@ -131,7 +144,7 @@ with tab3:
   Contains functions to calculate evaluation metrics for text-to-image outputs.
 - **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
   Generates images using text-to-image models and computes evaluation metrics, saving results to CSV.
-- **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_results.csv)**  
+- **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/results/evaluation_results.csv)**  
   CSV file that stores all computed evaluation metrics.
 - **[visualization_app.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/visualization_app.py)**  
   Streamlit app that visualizes the generated images and evaluation metrics.
@@ -141,7 +154,9 @@ with tab3:
     
     st.subheader("System Architecture")
     # st.image("README_files/architechture.png", use_container_width=True)
-    
+
+# --------------------------------------------------- Tab5: "Disclaimer"  --------------------------------------------------- 
+with tab5:
     st.subheader("Disclaimer")
     st.markdown("""
 **Disclaimer:** This app is for education, research and display purposes only. All images are generated via huggingface API and CLIP based evaluation with  local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.

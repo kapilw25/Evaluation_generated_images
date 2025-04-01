@@ -1,0 +1,4 @@
+Model,Avg_Clip_Score_Prompt_GenImg,Avg_Clip_Cos_Sim_GenImg_GTimg,Avg_LPIPS_GenImg_GTimg,FID_Frechet_inception_distance,MRR_Mean_Reciprocal_Rank,Recall@3
+stable_diffusion_v1_5,31.61,0.71,0.7,178.44,0.26,0.46
+CogView4_6B,31.5,0.76,0.64,180.66,0.38,0.42
+FLUX_1_dev,31.2,0.79,0.6,182.7,0.32,0.38

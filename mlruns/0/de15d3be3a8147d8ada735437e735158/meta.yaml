@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/de15d3be3a8147d8ada735437e735158/artifacts
+end_time: 1743486939525
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: de15d3be3a8147d8ada735437e735158
+run_name: bouncy-toad-298
+run_uuid: de15d3be3a8147d8ada735437e735158
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743486939516
+status: 3
+tags: []
+user_id: 016649880

@@ -17,3 +17,5 @@ combined_CV.py
 gdrive_creds.json
 gdrive_service_account_key.json
 improve_metrics.pdf
+gitignore_files
+text2image_generation.ipynb
