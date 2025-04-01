@@ -36,12 +36,12 @@ if not os.path.exists(image_dir):
 df = pd.read_csv(gen_img_metadata)
 
 
-# create 2 tabs:
+# create tabs:
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Compare Images",
     "Evaluation Metrics",
     "MLflow UI",
-    "Project Structure",
+    "System Design",
     "Disclaimer"
 ])
 
@@ -92,8 +92,6 @@ with tab1:
       if row.empty:
         continue
       row_data = row.iloc[0]
-      # image_filename = row_data["Filename"]
-      # image_path = os.path.join(image_dir, image_filename)
       image_path = row_data["gen_img_path"]
       if os.path.exists(image_path):
         gen_img = Image.open(image_path).convert("RGB")
@@ -137,8 +135,10 @@ with tab3:
 
 # --------------------------------------------------- Tab4: "Project Structure"  --------------------------------------------------- 
 with tab4:
+    st.subheader("System Architecture")
+    st.image("README_files/Sys_design.png", use_container_width=True)
 
-    st.subheader("Project Structure")
+    st.subheader("Code Explanation")
     st.markdown("""
 - **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
   Contains functions to calculate evaluation metrics for text-to-image outputs.
@@ -152,8 +152,7 @@ with tab4:
   Directory containing the generated images.
     """, unsafe_allow_html=True)
     
-    st.subheader("System Architecture")
-    # st.image("README_files/architechture.png", use_container_width=True)
+    
 
 # --------------------------------------------------- Tab5: "Disclaimer"  --------------------------------------------------- 
 with tab5:

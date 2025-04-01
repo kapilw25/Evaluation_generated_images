@@ -21,7 +21,7 @@ from cleanfid import fid # Fréchet inception distance (FID)
 # Evaluation model name (scalable to other models later)
 MODEL_NAMES = ["stable_diffusion_v1_5", "CogView4_6B", "FLUX_1_dev"]
 
-# Paths for ground truth and generated images
+# Paths for ground truth images
 GT_PATH = "DeepFashion/images"
 
  
