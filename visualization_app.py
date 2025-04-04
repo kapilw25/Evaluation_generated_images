@@ -9,11 +9,6 @@ st.set_page_config(layout="wide")
 
 st.title("MultiModal Recommendation for Text-to-Image Generation")
 
-if "mlflow_started" not in st.session_state:
-  subprocess.Popen(["mlflow", "ui", "--port", "5050", "--backend-store-uri", "mlruns"])
-  time.sleep(3) # giving the MLflow UI time to start
-  st.session_state.mlflow_started = True
-
 gen_img_metadata = "image_generated/gen_img_metadata.csv"
 # Generated image metadata column names: ['model', 'image_key', 'prompt', 'gen_img_path']
 
@@ -32,15 +27,12 @@ if not os.path.exists(image_dir):
     st.stop()
     
 # Load CSV
-# df = pd.read_csv(csv_file)
 df = pd.read_csv(gen_img_metadata)
 
-
 # create tabs:
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4 = st.tabs([
     "Compare Images",
     "Evaluation Metrics",
-    "MLflow UI",
     "System Design",
     "Disclaimer"
 ])
@@ -126,15 +118,9 @@ with tab2:
     st.subheader("Evaluation Metrics - Per-Model Results")
     df1 = pd.read_csv("results/evaluation_results.csv")
     st.dataframe(df1)
-    
-# --------------------------------------------------- Tab3: "MLflow UI"  --------------------------------------------------- 
+  
+# # --------------------------------------------------- Tab4: "Project Structure"  --------------------------------------------------- 
 with tab3:
-  st.subheader("Models' Performance analysis via Mlflow")
-  st.markdown("Live experiment tracking and comaprison across model/prompt combinations. The MLflow UI is embedded below.")
-  st.components.v1.iframe("http://localhost:5050", height=1200, scrolling=True)
-
-# --------------------------------------------------- Tab4: "Project Structure"  --------------------------------------------------- 
-with tab4:
     st.subheader("System Architecture")
     st.image("README_files/Sys_design.png", use_container_width=True)
 
@@ -155,8 +141,10 @@ with tab4:
     
 
 # --------------------------------------------------- Tab5: "Disclaimer"  --------------------------------------------------- 
-with tab5:
+with tab4:
     st.subheader("Disclaimer")
     st.markdown("""
-**Disclaimer:** This app is for education, research and display purposes only. All images are generated via huggingface API and CLIP based evaluation with  local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
+**Disclaimer:** This app is for education, research and display purposes only. \n
+All images are generated via huggingface API and \n
+CLIP based evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
     """)

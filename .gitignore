@@ -19,3 +19,4 @@ gdrive_service_account_key.json
 improve_metrics.pdf
 gitignore_files
 text2image_generation.ipynb
+vis_streamlit_mlflow.py
