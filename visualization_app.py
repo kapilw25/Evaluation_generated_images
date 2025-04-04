@@ -144,7 +144,7 @@ with tab3:
 with tab4:
     st.subheader("Disclaimer")
     st.markdown("""
-**Disclaimer:** This app is for education, research and display purposes only. \n
-All images are generated via huggingface API and \n
-MultiModal evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
+- This app is for education, research and display purposes only. \n
+- All images are generated via huggingface API. \n
+- MultiModal evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
     """)
