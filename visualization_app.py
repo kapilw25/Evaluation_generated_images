@@ -146,5 +146,5 @@ with tab4:
     st.markdown("""
 **Disclaimer:** This app is for education, research and display purposes only. \n
 All images are generated via huggingface API and \n
-CLIP based evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
+MultiModal evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
     """)
