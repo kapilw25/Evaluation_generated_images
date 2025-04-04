@@ -40,7 +40,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # --------------------------------------------------- Tab1: Compare Image  --------------------------------------------------- 
 with tab1:        
     # Extract Unique prompts from the CSV
-    prompts = sorted(df["prompt"].unique())
+    prompts = df["prompt"].unique()
 
     # dropdown to select which prompt to display
     selected_prompt = st.selectbox("Select a prompt:", prompts)
