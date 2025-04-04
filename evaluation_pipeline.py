@@ -19,14 +19,15 @@ from cleanfid import fid # Fréchet inception distance (FID)
 
 # ----------------- Configuration -----------------
 # Evaluation model name (scalable to other models later)
-MODEL_NAMES = ["stable_diffusion_v1_5", "CogView4_6B", "FLUX_1_dev"]
+df_metadata = pd.read_csv("image_generated/gen_img_metadata.csv")
+# MODEL_NAMES = ["stable_diffusion_v1_5", "CogView4_6B", "FLUX_1_dev"]
+MODEL_NAMES = df_metadata["model"].unique().tolist()
 
 # Paths for ground truth images
 GT_PATH = "DeepFashion/images"
 
  
 # ----------------- Load MetaData -----------------
-df_metadata = pd.read_csv("image_generated/gen_img_metadata.csv")
 # add ground truth image path column based on the image_key from GT_PATH
 GT_PATH = "DeepFashion/images"
 df_metadata["gt_img_path"] = df_metadata["image_key"].apply(

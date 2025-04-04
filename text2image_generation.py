@@ -26,8 +26,8 @@ with open("DeepFashion/captions_sample.csv", "w", newline="", encoding="utf-8") 
         
 # Load the CSV into a Dataframe
 df_prompt_map = pd.read_csv("DeepFashion/captions_sample.csv")
-print(f"top 5 rows of DeepFashion/captions_sample.csv")
-print(df_prompt_map.head())
+# print(f"top 5 rows of DeepFashion/captions_sample.csv")
+# print(df_prompt_map.head())
 
 # convert df_prompt_map DataFrame to list of tuples for consistent ordering using "image_key" and "prompt" columns
 prompt_items = list(
@@ -43,13 +43,14 @@ api_key = os.getenv("HF_API_KEY")
 
 # List of models and providers
 models = [
+    {"provider": "hf-inference", "model": "openfree/flux-chatgpt-ghibli-lora"},
     {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5"},
     {"provider": "fal-ai", "model": "THUDM/CogView4-6B"},
     {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"},
 ]
 
-# "THUDM/CogView4-6B" becomes "CogView4_6B"
-# "black-forest-labs/FLUX.1-dev" becomes "FLUX_1_dev"
+# "THUDM/CogView4-6B" becomes "CogView4-6B"
+# "black-forest-labs/FLUX.1-dev" becomes "FLUX.1-dev"
 def sanitize_model_name(name):
     # remove anything before '/' and then replace all non-alphanumeric characters with underscores '_'
     return re.sub(r'[^A-Za-z0-9]+', '_', name.split('/')[-1]) 

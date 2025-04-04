@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/e95c5d153a4f467386c213e6dee05144/artifacts
+end_time: 1743785715712
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: e95c5d153a4f467386c213e6dee05144
+run_name: lyrical-carp-449
+run_uuid: e95c5d153a4f467386c213e6dee05144
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743785715703
+status: 3
+tags: []
+user_id: 016649880

@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/45fefb81bad5413d842915a307d75046/artifacts
+end_time: 1743785728565
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 45fefb81bad5413d842915a307d75046
+run_name: placid-dove-593
+run_uuid: 45fefb81bad5413d842915a307d75046
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743785728556
+status: 3
+tags: []
+user_id: 016649880
