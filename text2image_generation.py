@@ -81,7 +81,13 @@ for item in tqdm(models, desc="Generating Images", unit="model"):
         for attempt in range(3):
             try:
                 client = InferenceClient(provider=item["provider"], api_key=api_key)
-                image = client.text_to_image(prompt, model=item["model"])
+                model=item["model"]
+                # if model contains "ghibli" in the name, then prompt starts with "a ghibli style" + prompt
+                if "ghibli" in model:
+                    prompt_updated = f"Ghibli Style {prompt}"
+                else:
+                    prompt_updated = prompt
+                image = client.text_to_image(prompt_updated, model=model)
                 image.save(image_path)
                 images.setdefault(sanitized_model, []).append(image_path)
                 metadata_list.append({
