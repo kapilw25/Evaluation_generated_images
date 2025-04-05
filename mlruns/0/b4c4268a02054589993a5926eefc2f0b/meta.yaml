@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/b4c4268a02054589993a5926eefc2f0b/artifacts
+end_time: 1743814531434
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b4c4268a02054589993a5926eefc2f0b
+run_name: mysterious-duck-803
+run_uuid: b4c4268a02054589993a5926eefc2f0b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743814531426
+status: 3
+tags: []
+user_id: 016649880

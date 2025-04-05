@@ -1,0 +1,15 @@
+artifact_uri: file:///kapil_wanaskar/1_text_to_image_recommendation/mlruns/0/a1b494fc1cda49e5a3cc906c97b51a62/artifacts
+end_time: 1743814505696
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a1b494fc1cda49e5a3cc906c97b51a62
+run_name: clumsy-goose-94
+run_uuid: a1b494fc1cda49e5a3cc906c97b51a62
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743814505688
+status: 3
+tags: []
+user_id: 016649880
