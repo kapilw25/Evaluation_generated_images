@@ -98,11 +98,11 @@ with mlflow.start_run(run_name="Evaluation Run"):
         # ----------------- Final Metrics Calculation -----------------
         metrics_model = {
             "Model": model,
-            "Avg_Clip_Score_Prompt_GenImg": round(avg_clip_score, 2),
-            "Avg_Clip_Cos_Sim_GenImg_GTimg": round(avg_clip_cos_sim, 2),
-            "Avg_LPIPS_GenImg_GTimg": round(avg_lpips, 2),
-            "FID_Frechet_inception_distance": round(Frechet_inception_distance_value, 2),
-            "MRR_Mean_Reciprocal_Rank": round(retrieval_metrics["MRR"], 2),
+            "Avg Clip Score [Prompt vs GenIm]": round(avg_clip_score, 2),
+            "Avg Clip Cos Sim [GenImg vs GTimg]": round(avg_clip_cos_sim, 2),
+            "Avg LPIPS [GenImg vs GTimg]": round(avg_lpips, 2),
+            "FID (Frechet inception distance)": round(Frechet_inception_distance_value, 2),
+            "MRR (Mean Reciprocal Rank)": round(retrieval_metrics["MRR"], 2),
             "Recall@3": round(retrieval_metrics["Recall@3"], 2)
         }
         
@@ -110,8 +110,8 @@ with mlflow.start_run(run_name="Evaluation Run"):
         with mlflow.start_run(nested=True):
             mlflow.log_param("Model", model)
             mlflow.log_metrics({
-                "Clip_Score_Prompt_GenImg": round(avg_clip_score, 2),
-                "Clip_Cos_Sim_Gen_GTimg": round(avg_clip_cos_sim, 2),
+                "Clip_Score": round(avg_clip_score, 2),
+                "Clip_Cos_Sim": round(avg_clip_cos_sim, 2),
                 "LPIPS_Gen_GTimg": round(avg_lpips, 2),
                 "FID": round(Frechet_inception_distance_value, 2),
                 "MRR": round(retrieval_metrics["MRR"], 2),

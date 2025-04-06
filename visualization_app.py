@@ -138,7 +138,7 @@ with tab2:
         "Metric": [
             "Avg Clip Score [Prompt vs GenIm]",
             "Avg Clip Cos Sim [GenImg vs GTimg]",
-            "Avg LPIPS [GenImg vs GTimg]s",
+            "Avg LPIPS [GenImg vs GTimg]",
             "FID (Frechet inception distance)",
             "MRR (Mean Reciprocal Rank)",
             "Recall@3"
