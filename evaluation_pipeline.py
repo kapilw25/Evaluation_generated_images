@@ -135,15 +135,15 @@ df_results = pd.DataFrame.from_dict(final_metrics_all, orient='index').reset_ind
     
 # Calculate the weighted score using our helper from evaluation_metrics.py
 from evaluation_metrics import compute_weighted_score
-df_results["Weighted_Score ⬆️"] = round(compute_weighted_score(df_results), 2)
+df_results["Weighted Score ⬆️"] = round(compute_weighted_score(df_results), 2)
 # Sort models by the weighted score (higher is better)
-df_results.sort_values("Weighted_Score ⬆️", ascending=False, inplace=True)
+df_results.sort_values("Weighted Score ⬆️", ascending=False, inplace=True)
 
 # arrange columns in order 
 # Model>> Weighted_Score >>  CLIP Cosine >>  LPIPS >> FID >> Retrieval >> CLIP Score
 cols_order = [
     "Model",
-    "Weighted_Score ⬆️",
+    "Weighted Score ⬆️",
     "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]",
     "Avg LPIPS ⬇️ [GenImg vs GTimg]",
     "FID ⬇️ (Frechet inception distance)",

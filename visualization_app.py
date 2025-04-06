@@ -64,8 +64,8 @@ with tab1:
     # For each model in the filtered DataFrame, vertical display the image + metrics
     models_for_prompt = filtered_df["model"].unique()
     # Sort models by their weighted score
-    model_scores = df1[df1["Model"].isin(models_for_prompt)][["Model", "Weighted_Score ⬆️"]]
-    model_scores = model_scores.sort_values("Weighted_Score ⬆️", ascending=False)
+    model_scores = df1[df1["Model"].isin(models_for_prompt)][["Model", "Weighted Score ⬆️"]]
+    model_scores = model_scores.sort_values("Weighted Score ⬆️", ascending=False)
     sorted_models = model_scores["Model"].tolist()
 
     # Resize function to unify image sizes
@@ -160,7 +160,7 @@ with tab2:
     st.subheader("Evaluation Metric Descriptions")
     explanation = {
         "Metric": [
-            "Weighted_Score ⬆️",
+            "Weighted Score ⬆️",
             "Avg Clip Score ⬆️ [Prompt vs GenIm]",
             "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]",
             "Avg LPIPS ⬇️ [GenImg vs GTimg]",
