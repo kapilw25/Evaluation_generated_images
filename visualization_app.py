@@ -11,6 +11,7 @@ st.title("MultiModal Recommendation for Text-to-Image Generation")
 
 gen_img_metadata = "image_generated/gen_img_metadata.csv"
 # Generated image metadata column names: ['model', 'image_key', 'prompt', 'gen_img_path']
+df1 = pd.read_csv("results/evaluation_results.csv")
 
 image_dir = "image_generated"
   
@@ -62,7 +63,11 @@ with tab1:
 
     # For each model in the filtered DataFrame, vertical display the image + metrics
     models_for_prompt = filtered_df["model"].unique()
-    
+    # Sort models by their weighted score
+    model_scores = df1[df1["Model"].isin(models_for_prompt)][["Model", "Weighted_Score ⬆️"]]
+    model_scores = model_scores.sort_values("Weighted_Score ⬆️", ascending=False)
+    sorted_models = model_scores["Model"].tolist()
+
     # Resize function to unify image sizes
     def resize_image(img, size=(768, 1024)):
       return img.resize(size)
@@ -79,7 +84,7 @@ with tab1:
       st.warning(f"Ground Truth image not found: {gt_filename}")
       
     # then each model's generated image
-    for model_name in models_for_prompt:
+    for model_name in sorted_models:
       row = filtered_df[filtered_df["model"]==model_name]
       if row.empty:
         continue
@@ -116,7 +121,7 @@ with tab1:
 # --------------------------------------------------- Tab: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
     st.subheader("Evaluation Metrics - Per-Model Results")
-    df1 = pd.read_csv("results/evaluation_results.csv")
+    # wrap long text in column
     st.dataframe(df1)
     
     # display evaluation metrics comparison image from MLflow, stored at results/mlflow.png
@@ -136,22 +141,25 @@ with tab2:
     st.subheader("Evaluation Metric Descriptions")
     explanation = {
         "Metric": [
-            "Avg Clip Score [Prompt vs GenIm]",
-            "Avg Clip Cos Sim [GenImg vs GTimg]",
-            "Avg LPIPS [GenImg vs GTimg]",
-            "FID (Frechet inception distance)",
-            "MRR (Mean Reciprocal Rank)",
-            "Recall@3"
+            "Weighted_Score ⬆️",
+            "Avg Clip Score ⬆️ [Prompt vs GenIm]",
+            "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]",
+            "Avg LPIPS ⬇️ [GenImg vs GTimg]",
+            "FID ⬇️ (Frechet inception distance)",
+            "MRR ⬆️ (Mean Reciprocal Rank)",
+            "Recall@3 ⬆️"
         ],
         "Meaning": [
-            "How well the image matches the given text prompt",
-            "How visually similar the generated image is to the real one",
-            "Measures visible differences—lower means more realistic",
-            "Quality score comparing real vs. generated images—lower is better",
-            "Measures how quickly the correct match appears when sorted by relevance",
-            "Shows how often the correct match is in the top 3 results"
+            "A composite score that combines multiple metrics to provide an overall evaluation of the model's performance. Higher is better.",
+            "Measures how well the generated image aligns with the input prompt. A higher score indicates that the image better captures the semantic content of the prompt",
+            "Evaluates the similarity between the generated image and the ground truth using CLIP embeddings. Higher values mean closer similarity",
+            "Focuses on perceptual similarity; a lower LPIPS score indicates that the generated image is perceptually closer to the ground truth",
+            "Measures the distributional difference between generated and real images. A lower FID score signifies that the generated images are closer in distribution to the ground truth images",
+            "Assess how effectively the generated image can “retrieve” its corresponding ground truth image. A higher MRR indicates that the correct match is ranked higher in the list of similar images",
+            "Shows how often the correct match is in the top 3 results. A higher recall rate indicates better retrieval performance"
         ],
     "Technical Description": [
+        "Computes a composite score as: 0.4 × (Normalized CLIP Cosine) + 0.3 × (Normalized LPIPS) + 0.15 × (Normalized FID) + 0.1 × (Normalized Retrieval) + 0.05 × (Normalized CLIP Score). Normalization is performed via min–max scaling, with inversion for metrics where lower is better.",
         "Uses CLIP ViT-B/32 model. Computes logits_per_image by passing (prompt, generated image) into CLIP and taking the image-text similarity score. Average over all samples.",
         "Generates CLIP embeddings for gen_img and GT_img using ViT-B/32. Computes cosine similarity between each pair and averages the similarity scores over the dataset.",
         "Uses LPIPS metric with a pre-trained VGG network. Extracts intermediate features and computes L2 distance between normalized features of gen and GT images. Lower means perceptually similar.",

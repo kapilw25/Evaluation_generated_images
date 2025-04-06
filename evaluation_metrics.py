@@ -89,3 +89,53 @@ def compute_lpips(gen_img_path, gt_img_path):
         dist = lpips_model(gen_img, gt_img)
     return dist.item()
    
+def compute_weighted_score(df):
+    """
+    Compute a weighted score for each model using min–max normalization.
+    
+    Expected DataFrame columns:
+      - "Avg Clip Score ⬆️ [Prompt vs GenIm]" (higher is better)
+      - "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]" (higher is better)
+      - "Avg LPIPS ⬇️ [GenImg vs GTimg]" (lower is better)
+      - "FID ⬇️ (Frechet inception distance)" (lower is better)
+      - "MRR ⬆️ (Mean Reciprocal Rank)" (higher is better)
+      - "Recall@3 ⬆️" (higher is better)
+    
+    The composite "Normalized Retrieval" is defined as the average of normalized MRR and Recall@3.
+    
+    Weighted_Score is defined as:
+      0.4 × (Normalized CLIP Cosine) +
+      0.3 × (Normalized LPIPS) +
+      0.15 × (Normalized FID) +
+      0.1 × (Normalized Retrieval) +
+      0.05 × (Normalized CLIP Score)
+    """
+    def normalize(series, higher_better=True):
+        min_val = series.min()
+        max_val = series.max()
+        # Avoid division by zero if all values are equal.
+        if max_val == min_val:
+            return series * 0 + 1  
+        if higher_better:
+            return (series - min_val) / (max_val - min_val)
+        else:
+            return (max_val - series) / (max_val - min_val)
+    
+    norm_clip_cos = normalize(df["Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]"], higher_better=True)
+    norm_lpips = normalize(df["Avg LPIPS ⬇️ [GenImg vs GTimg]"], higher_better=False)
+    norm_fid = normalize(df["FID ⬇️ (Frechet inception distance)"], higher_better=False)
+    norm_clip_score = normalize(df["Avg Clip Score ⬆️ [Prompt vs GenIm]"], higher_better=True)
+    norm_mrr = normalize(df["MRR ⬆️ (Mean Reciprocal Rank)"], higher_better=True)
+    norm_recall = normalize(df["Recall@3 ⬆️"], higher_better=True)
+    
+    # Composite retrieval: average of normalized MRR and Recall@3.
+    norm_retrieval = (norm_mrr + norm_recall) / 2.0
+    
+    # Compute the weighted score using the given weights.
+    weighted_score = (0.4 * norm_clip_cos +
+                      0.3 * norm_lpips +
+                      0.15 * norm_fid +
+                      0.1 * norm_retrieval +
+                      0.05 * norm_clip_score)
+    
+    return weighted_score

@@ -98,12 +98,12 @@ with mlflow.start_run(run_name="Evaluation Run"):
         # ----------------- Final Metrics Calculation -----------------
         metrics_model = {
             "Model": model,
-            "Avg Clip Score [Prompt vs GenIm]": round(avg_clip_score, 2),
-            "Avg Clip Cos Sim [GenImg vs GTimg]": round(avg_clip_cos_sim, 2),
-            "Avg LPIPS [GenImg vs GTimg]": round(avg_lpips, 2),
-            "FID (Frechet inception distance)": round(Frechet_inception_distance_value, 2),
-            "MRR (Mean Reciprocal Rank)": round(retrieval_metrics["MRR"], 2),
-            "Recall@3": round(retrieval_metrics["Recall@3"], 2)
+            "Avg Clip Score ⬆️ [Prompt vs GenIm]": round(avg_clip_score, 2),
+            "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]": round(avg_clip_cos_sim, 2),
+            "Avg LPIPS ⬇️ [GenImg vs GTimg]": round(avg_lpips, 2),
+            "FID ⬇️ (Frechet inception distance)": round(Frechet_inception_distance_value, 2),
+            "MRR ⬆️ (Mean Reciprocal Rank)": round(retrieval_metrics["MRR"], 2),
+            "Recall@3 ⬆️": round(retrieval_metrics["Recall@3"], 2)
         }
         
         # Log current model metrics to MLflow
@@ -126,11 +126,35 @@ print("All Evaluation Metrics:")
 print(json.dumps(str(final_metrics_all)))
 
 df_results = pd.DataFrame.from_dict(final_metrics_all, orient='index').reset_index(drop=True)
-# Ensure "Model" is the first column
-cols = df_results.columns.tolist()
-if "Model" in cols:
-    cols.insert(0, cols.pop(cols.index("Model")))
-    df_results = df_results[cols]
+# # Ensure "Model" is the first column
+# cols = df_results.columns.tolist()
+# if "Model" in cols:
+#     cols.insert(0, cols.pop(cols.index("Model")))
+#     df_results = df_results[cols]
+
+    
+# Calculate the weighted score using our helper from evaluation_metrics.py
+from evaluation_metrics import compute_weighted_score
+df_results["Weighted_Score ⬆️"] = round(compute_weighted_score(df_results), 2)
+# Sort models by the weighted score (higher is better)
+df_results.sort_values("Weighted_Score ⬆️", ascending=False, inplace=True)
+
+# arrange columns in order 
+# Model>> Weighted_Score >>  CLIP Cosine >>  LPIPS >> FID >> Retrieval >> CLIP Score
+cols_order = [
+    "Model",
+    "Weighted_Score ⬆️",
+    "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]",
+    "Avg LPIPS ⬇️ [GenImg vs GTimg]",
+    "FID ⬇️ (Frechet inception distance)",
+    "MRR ⬆️ (Mean Reciprocal Rank)",
+    "Recall@3 ⬆️",
+    "Avg Clip Score ⬆️ [Prompt vs GenIm]"
+]
+# Reorder the columns
+df_results = df_results[cols_order]
+
+# Save the results to CSV    
 df_results.to_csv("results/evaluation_results.csv", index=False)
 mlflow.log_artifact("results/evaluation_results.csv")
 print(f"Saved Evaluation results at 'results/evaluation_results.csv'")
