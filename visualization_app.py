@@ -121,8 +121,27 @@ with tab1:
 # --------------------------------------------------- Tab: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
     st.subheader("Evaluation Metrics - Per-Model Results")
-    # wrap long text in column
-    st.dataframe(df1)
+    # wrap text in the table to make sure it fits the screen
+    st.markdown(
+        """
+        <style>
+            .wrapped-text {
+                white-space: normal;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    # display each numerical value upto 2 decimal points
+    st.table(
+        df1.style
+          .format(lambda x: "{:.2f}".format(x) if isinstance(x, (int, float)) else x)
+          .set_table_attributes('class="wrapped-text"')
+    )
+
+
+    
+    st.markdown("---")
     
     # display evaluation metrics comparison image from MLflow, stored at results/mlflow.png
     mlflow_image_path = "results/mlflow.png"
