@@ -37,7 +37,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "Disclaimer"
 ])
 
-# --------------------------------------------------- Tab1: Compare Image  --------------------------------------------------- 
+# --------------------------------------------------- Tab: Compare Image  --------------------------------------------------- 
 with tab1:        
     # Extract Unique prompts from the CSV
     prompts = df["prompt"].unique()
@@ -113,7 +113,7 @@ with tab1:
     st.write("---")
     st.markdown("**End of Comparison**")
 
-# --------------------------------------------------- Tab2: "Evaluation Metrics"  --------------------------------------------------- 
+# --------------------------------------------------- Tab: "Evaluation Metrics"  --------------------------------------------------- 
 with tab2:
     st.subheader("Evaluation Metrics - Per-Model Results")
     df1 = pd.read_csv("results/evaluation_results.csv")
@@ -129,8 +129,40 @@ with tab2:
     else:
         st.error(f"MLflow image not found: {mlflow_image_path}")
 
+    st.markdown("---")
+    # st.subheader("📊 Evaluation Metric Descriptions")
+
+    # --- Layman Explanation ---
+    st.subheader("Evaluation Metric Descriptions")
+    explanation = {
+        "Metric": [
+            "Avg_Clip_Score_Prompt_GenImg",
+            "Avg_Clip_Cos_Sim_GenImg_GTimg",
+            "Avg_LPIPS_GenImg_GTimg",
+            "FID_Frechet_inception_distance",
+            "MRR_Mean_Reciprocal_Rank",
+            "Recall@3"
+        ],
+        "Meaning": [
+            "How well the image matches the given text prompt",
+            "How visually similar the generated image is to the real one",
+            "Measures visible differences—lower means more realistic",
+            "Quality score comparing real vs. generated images—lower is better",
+            "Measures how quickly the correct match appears when sorted by relevance",
+            "Shows how often the correct match is in the top 3 results"
+        ],
+    "Technical Description": [
+        "Uses CLIP ViT-B/32 model. Computes logits_per_image by passing (prompt, generated image) into CLIP and taking the image-text similarity score. Average over all samples.",
+        "Generates CLIP embeddings for gen_img and GT_img using ViT-B/32. Computes cosine similarity between each pair and averages the similarity scores over the dataset.",
+        "Uses LPIPS metric with a pre-trained VGG network. Extracts intermediate features and computes L2 distance between normalized features of gen and GT images. Lower means perceptually similar.",
+        "Uses InceptionV3 activations to extract high-dimensional features. Computes Fréchet Distance between generated and real image distributions using their means (μ) and covariances (Σ).",
+        "Ranks GT image among all others based on cosine similarity between gen_img and GT pool embeddings. MRR = mean of 1 / rank_of_correct_GT, measuring average retrieval position.",
+        "Similar to MRR but binary. For each gen_img, checks if the correct GT image is among top-3 most similar (cosine) images. Computes average success rate over all samples."
+    ]
+    }
+    st.table(pd.DataFrame(explanation))
   
-# # --------------------------------------------------- Tab4: "Project Structure"  --------------------------------------------------- 
+# # --------------------------------------------------- Tab: "Project Structure"  --------------------------------------------------- 
 with tab3:
     st.subheader("System Architecture")
     st.image("README_files/Sys_design.png", use_container_width=True)
@@ -151,7 +183,7 @@ with tab3:
     
     
 
-# --------------------------------------------------- Tab5: "Disclaimer"  --------------------------------------------------- 
+# --------------------------------------------------- Tab: "Disclaimer"  --------------------------------------------------- 
 with tab4:
     st.subheader("Disclaimer")
     st.markdown("""
