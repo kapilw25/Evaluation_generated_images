@@ -136,11 +136,11 @@ with tab2:
     st.subheader("Evaluation Metric Descriptions")
     explanation = {
         "Metric": [
-            "Avg_Clip_Score_Prompt_GenImg",
-            "Avg_Clip_Cos_Sim_GenImg_GTimg",
-            "Avg_LPIPS_GenImg_GTimg",
-            "FID_Frechet_inception_distance",
-            "MRR_Mean_Reciprocal_Rank",
+            "Avg Clip Score [Prompt vs GenIm]",
+            "Avg Clip Cos Sim [GenImg vs GTimg]",
+            "Avg LPIPS [GenImg vs GTimg]s",
+            "FID (Frechet inception distance)",
+            "MRR (Mean Reciprocal Rank)",
             "Recall@3"
         ],
         "Meaning": [
