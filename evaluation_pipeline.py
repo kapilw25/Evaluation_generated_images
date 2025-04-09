@@ -10,7 +10,6 @@ from evaluation_metrics import(
     clip_processor,
     lpips_model,
     get_clip_embedding,
-    sanitize_prompt_key,
     calculate_clip_metrics,
     compute_clip_score,
     compute_lpips
@@ -20,7 +19,6 @@ from cleanfid import fid # Fréchet inception distance (FID)
 # ----------------- Configuration -----------------
 # Evaluation model name (scalable to other models later)
 df_metadata = pd.read_csv("image_generated/gen_img_metadata.csv")
-# MODEL_NAMES = ["stable_diffusion_v1_5", "CogView4_6B", "FLUX_1_dev"]
 MODEL_NAMES = df_metadata["model"].unique().tolist()
 
 # Paths for ground truth images
@@ -126,16 +124,14 @@ print("All Evaluation Metrics:")
 print(json.dumps(str(final_metrics_all)))
 
 df_results = pd.DataFrame.from_dict(final_metrics_all, orient='index').reset_index(drop=True)
-# # Ensure "Model" is the first column
-# cols = df_results.columns.tolist()
-# if "Model" in cols:
-#     cols.insert(0, cols.pop(cols.index("Model")))
-#     df_results = df_results[cols]
-
     
 # Calculate the weighted score using our helper from evaluation_metrics.py
 from evaluation_metrics import compute_weighted_score
 df_results["Weighted Score ⬆️"] = round(compute_weighted_score(df_results), 2)
+# Log the weighted score to MLflow
+with mlflow.start_run(nested=True):
+    mlflow.log_param("Weighted_Score", round(compute_weighted_score(df_results), 2))
+
 # Sort models by the weighted score (higher is better)
 df_results.sort_values("Weighted Score ⬆️", ascending=False, inplace=True)
 

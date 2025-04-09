@@ -16,18 +16,6 @@ lpips_model = lpips.LPIPS(
     ).to("cuda")
 
 # ----------------- Evaluation Functions -----------------
-
-# "WOMEN-Tees_Tanks-id_00000112-06_7_additional.jpg"  >> becomes >> "WOMEN_Tees_Tanks_additional"
-def sanitize_prompt_key(image_key_text):
-    # remove the id part 
-    # prompt_key = re.sub(r'-id_[^_]+_[^_]+', '', prompt_key_text)
-    # remove the extension
-    image_key = re.sub(r'\.jpg$', '', image_key_text)
-    # replace all non-alphanumeric characters with underscores
-    # prompt_key = re.sub(r'[^A-Za-z0-9]+', '_', prompt_key)
-    return image_key
-
-# ----------------- Evaluation Functions -----------------
 def get_clip_embedding(image_path):
     image = Image.open(image_path).convert("RGB")
     inputs = clip_processor(images=image, return_tensors="pt", padding=True).to("cuda")

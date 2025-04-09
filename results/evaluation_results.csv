@@ -1,5 +1,9 @@
 Model,Weighted Score ⬆️,Avg Clip Cos Sim ⬆️ [GenImg vs GTimg],Avg LPIPS ⬇️ [GenImg vs GTimg],FID ⬇️ (Frechet inception distance),MRR ⬆️ (Mean Reciprocal Rank),Recall@3 ⬆️,Avg Clip Score ⬆️ [Prompt vs GenIm]
-FLUX_1_dev,0.92,0.79,0.6,182.7,0.32,0.38,31.2
-CogView4_6B,0.81,0.76,0.64,180.66,0.38,0.42,31.5
-stable_diffusion_v1_5,0.53,0.71,0.7,178.44,0.26,0.46,31.61
-flux_chatgpt_ghibli_lora,0.24,0.53,0.63,268.51,0.34,0.35,28.88
+Flux_Metadata,0.96,0.83,0.55,166.35,0.5,0.62,27.49
+Flux,0.75,0.79,0.6,182.7,0.32,0.38,31.2
+CogView_Metadata,0.74,0.8,0.63,176.18,0.43,0.46,29.69
+CogView,0.66,0.76,0.64,180.66,0.38,0.42,31.5
+StableDiffusion,0.47,0.71,0.7,178.44,0.26,0.46,31.61
+StableDiffusion_Metadata,0.47,0.75,0.71,191.17,0.33,0.38,29.3
+Ghibli_Metadata,0.25,0.53,0.58,262.29,0.25,0.27,26.18
+Ghibli,0.2,0.53,0.63,268.51,0.34,0.35,28.88
