@@ -9,9 +9,11 @@ st.set_page_config(layout="wide")
 
 st.title("MultiModal Recommendation for Text-to-Image Generation")
 
+# Load CSVs
 gen_img_metadata = "image_generated/gen_img_metadata.csv"
+df_gen_img_metadata = pd.read_csv(gen_img_metadata)
 # Generated image metadata column names: ['model', 'image_key', 'prompt', 'gen_img_path']
-df1 = pd.read_csv("results/evaluation_results.csv")
+df_evaluation_results = pd.read_csv("results/evaluation_results.csv")
 
 image_dir = "image_generated"
   
@@ -27,8 +29,7 @@ if not os.path.exists(image_dir):
     st.error(f"{image_dir} folder not found")
     st.stop()
     
-# Load CSV
-df = pd.read_csv(gen_img_metadata)
+
 
 # create tabs:
 tab1, tab2, tab3, tab4 = st.tabs([
@@ -41,30 +42,32 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # --------------------------------------------------- Tab: Compare Image  --------------------------------------------------- 
 with tab1:        
     # Extract Unique prompts from the CSV
-    prompts = df["prompt"].unique()
+    prompts = df_gen_img_metadata["prompt"].unique()
 
     # dropdown to select which prompt to display
     selected_prompt = st.selectbox("Select a prompt:", prompts)
     
-    filtered_df = df[df["prompt"] == selected_prompt]
-    if not filtered_df.empty:
-      gt_filename = filtered_df.iloc[0]["image_key"]
-      prompt_text = selected_prompt
-    else:
-      st.error("No data found for the selected prompt")
+    # map the selected prompt to its corresponding image key
+    selected_image_key = df_gen_img_metadata[df_gen_img_metadata["prompt"] == selected_prompt]["image_key"].iloc[0]
+    prompt_text = selected_prompt
+    
+    # Filter Dataframe by the chosen image key so both model and model_metadata rows are included
+    filtered_df = df_gen_img_metadata[df_gen_img_metadata["image_key"] == selected_image_key]
+    if filtered_df.empty:
+      st.error("No data found for the selected image key")
       st.stop()
     
-    
     # show ground-truth image
-    gt_path = os.path.join(ground_truth_images, gt_filename)
+    gt_path = os.path.join(ground_truth_images, selected_image_key)
     
-    # Filter DataFrame by the chosen prompt
-    filtered_df = df[df["prompt"] == selected_prompt]
+    # Filter DataFrame by selected image key to get all model variants
+    filtered_df = df_gen_img_metadata[df_gen_img_metadata["image_key"] == selected_image_key]
 
     # For each model in the filtered DataFrame, vertical display the image + metrics
     models_for_prompt = filtered_df["model"].unique()
+    # print(f"models_for_prompt : {models_for_prompt}")
     # Sort models by their weighted score
-    model_scores = df1[df1["Model"].isin(models_for_prompt)][["Model", "Weighted Score ⬆️"]]
+    model_scores = df_evaluation_results[df_evaluation_results["Model"].isin(models_for_prompt)][["Model", "Weighted Score ⬆️"]]
     model_scores = model_scores.sort_values("Weighted Score ⬆️", ascending=False)
     sorted_models = model_scores["Model"].tolist()
 
@@ -81,7 +84,7 @@ with tab1:
       gt_img = resize_image(gt_img)
       images_to_display.append(("Ground Truth from DeepFashion Dataset", gt_img))
     else:
-      st.warning(f"Ground Truth image not found: {gt_filename}")
+      st.warning(f"Ground Truth image not found: {selected_image_key}")
       
     # then each model's generated image
     for model_name in sorted_models:
@@ -134,7 +137,7 @@ with tab2:
     )
     # display each numerical value upto 2 decimal points
     st.table(
-        df1.style
+        df_evaluation_results.style
           .format(lambda x: "{:.2f}".format(x) if isinstance(x, (int, float)) else x)
           .set_table_attributes('class="wrapped-text"')
     )
