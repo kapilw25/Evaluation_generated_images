@@ -5,7 +5,7 @@ import os, ast
 import subprocess
 import time
 
-# st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 st.title("MultiModal Recommendation for Text-to-Image Generation")
 
@@ -167,35 +167,44 @@ with tab2:
 
     # create a selectbox to choose the metric for the grouped bar chart (excluding the "Model" column)
     metric_cols = [col for col in df_evaluation_results.columns if col != "Model"]
-    selected_metric = st.selectbox("Select a Metric:", metric_cols)
+    # selected_metric = st.selectbox("Select a Metric:", metric_cols)
+    selected_metrics = st.multiselect("Select upto 3 Metrics:", metric_cols, default=metric_cols[:1], max_selections=3)
     
-    # seperate base models (without "_Metadata") and metadata models (ending with "_Metadata")
-    df_base = df_evaluation_results[~df_evaluation_results["Model"].str.endswith("_Metadata")].copy()
-    df_meta = df_evaluation_results[df_evaluation_results["Model"].str.endswith("_Metadata")].copy()
+    if not selected_metrics:
+      st.info("Please select at least one metric to display the charts")
+    else:
+      # seperate base models (without "_Metadata") and metadata models (ending with "_Metadata")
+      df_base = df_evaluation_results[~df_evaluation_results["Model"].str.endswith("_Metadata")].copy()
+      df_meta = df_evaluation_results[df_evaluation_results["Model"].str.endswith("_Metadata")].copy()
+      
+      # create a common Basename column so e.g - "Flux_Metadata" becomes "Flux"
+      df_base["BaseName"] = df_base["Model"]
+      df_meta["BaseName"] = df_meta["Model"].str.replace("_Metadata", "")
+      
+      # Merge metadata rows into base rows on BaseName, so we have corresponding columns side-by-side
+      merged = pd.merge(df_base, df_meta, on="BaseName", suffixes=("_base", "_meta"))
+      
+      # create subplots for each selected metric
+      num_metrics = len(selected_metrics)
+      fig, axes = plt.subplots(1, num_metrics, figsize=(8*num_metrics, 5), sharey=False)
+      # if only one metric is selected, make sure axes is iterable
+      if num_metrics ==1:
+        axes = [axes]
+        
+      for i, metric in enumerate(selected_metrics):
+        ax = axes[i]
+        x = np.arange(len(merged))
+        width = 0.4
+        ax.bar(x - width/2, merged[f"{metric}_base"], width, label="Base")
+        ax.bar(x + width/2, merged[f"{metric}_meta"], width, label="Metadata")
+        ax.set_xticks(x)
+        ax.set_xticklabels(merged["BaseName"], rotation=45)
+        ax.set_ylabel(metric)
+        ax.set_title(f"Base vs. Metadata: {metric}")
+        ax.legend()
     
-    # create a common Basename column so e.g - "Flux_Metadata" becomes "Flux"
-    df_base["BaseName"] = df_base["Model"]
-    df_meta["BaseName"] = df_meta["Model"].str.replace("_Metadata", "")
-    
-    # Merge metadata rows into base rows on BaseName, so we have corresponding columns side-by-side
-    merged = pd.merge(df_base, df_meta, on="BaseName", suffixes=("_base", "_meta"))
-    
-    # select the grouped bar chart for the selected metric
-    x = np.arange(len(merged)) # one x position per base model
-    width = 0.35
-    
-    fig, ax = plt.subplots(figsize=(8,5))
-    rects1 = ax.bar(x - width/2, merged[f"{selected_metric}_base"], width, label="Base")
-    rects2 = ax.bar(x + width/2, merged[f"{selected_metric}_meta"], width, label="Metadata")
-    
-    ax.set_xticks(x)
-    ax.set_xticklabels(merged["BaseName"], rotation=45)
-    ax.set_ylabel(selected_metric)
-    ax.set_title(f"Base vs. Metadata: {selected_metric}")
-    ax.legend()
-    
-    plt.tight_layout()
-    st.pyplot(fig)
+      plt.tight_layout()
+      st.pyplot(fig)
     
     st.markdown("---")
     # st.subheader("📊 Evaluation Metric Descriptions")
