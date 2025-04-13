@@ -25,10 +25,19 @@ api_key = os.getenv("HF_API_KEY")
 
 # List of models and providers
 models = [
-    {"provider": "hf-inference", "model": "openfree/flux-chatgpt-ghibli-lora"},
-    {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5"},
-    {"provider": "fal-ai", "model": "THUDM/CogView4-6B"},
-    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"},
+    {"provider": "hf-inference", "model": "openfree/flux-chatgpt-ghibli-lora"}, # Base model: black-forest-labs/FLUX.1-dev
+    {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5"}, # title={High-Resolution Image Synthesis With Latent Diffusion Models},
+    {"provider": "fal-ai", "model": "stabilityai/stable-diffusion-3.5-large-turbo"}, # title={Scaling Rectified Flow Transformers for High-Resolution Image Synthesis}
+    {"provider": "fal-ai", "model": "THUDM/CogView4-6B"}, # title={CogView3: Finer and Faster Text-to-Image Generation via Relay Diffusion}
+    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"}, # n/a
+    {"provider": "hf-inference", "model": "PixArt-alpha/PixArt-XL-2-1024-MS"}, # title={PixArt-$α$: Fast Training of Diffusion Transformer for Photorealistic Text-to-Image Synthesis}
+    {"provider": "fal-ai", "model": "playgroundai/playground-v2.5-1024px-aesthetic"}, # title={Playground v2.5: Three Insights towards Enhancing Aesthetic Quality in Text-to-Image Generation},
+    {"provider": "hf-inference", "model": "aipicasso/emi"}, # title={SDXL: Improving Latent Diffusion Models for High-Resolution Image Synthesis}, 
+    {"provider": "hf-inference", "model": "ali-vilab/In-Context-LoRA"}, # title={In-Context LoRA for Diffusion Transformers}, title2={Group Diffusion Transformers are Unsupervised Multitask Learners},
+    {"provider": "fal-ai", "model": "Efficient-Large-Model/Sana_Sprint_1.6B_1024px_diffusers"}, # title={SANA-Sprint: One-Step Diffusion with Continuous-Time Consistency Distillation}
+    {"provider": "replicate", "model": "ByteDance/Hyper-SD"}, # title={Hyper-SD: Trajectory Segmented Consistency Model for Efficient Image Synthesis},
+    {"provider": "fal-ai", "model": "Kwai-Kolors/Kolors"}, # title={Kolors: Effective Training of Diffusion Model for Photorealistic Text-to-Image Synthesis}
+    {"provider": "fal-ai", "model": "Alpha-VLLM/Lumina-Image-2.0"}, # title={Lumina-Image 2.0: A Unified and Efficient Image Generative Framework},
 ]
 
 
