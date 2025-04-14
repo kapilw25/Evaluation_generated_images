@@ -252,23 +252,23 @@ with tab3:
 
     st.subheader("Code Explanation")
     st.markdown("""
-- **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
-  Contains functions to calculate evaluation metrics for text-to-image outputs.
-- **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
-  Generates images using text-to-image models and computes evaluation metrics, saving results to CSV.
-- **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/results/evaluation_results.csv)**  
-  CSV file that stores all computed evaluation metrics.
-- **[visualization_app.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/visualization_app.py)**  
-  Streamlit app that visualizes the generated images and evaluation metrics.
-- **[image_generated/](https://github.com/kapilw25/Evaluation_generated_images/blob/main/image_generated)**  
-  Directory containing the generated images.
-    """, unsafe_allow_html=True)
+    - **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
+      Contains functions to calculate evaluation metrics for text-to-image outputs.
+    - **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
+      Generates images using text-to-image models and computes evaluation metrics, saving results to CSV.
+    - **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/results/evaluation_results.csv)**  
+      CSV file that stores all computed evaluation metrics.
+    - **[visualization_app.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/visualization_app.py)**  
+      Streamlit app that visualizes the generated images and evaluation metrics.
+    - **[image_generated/](https://github.com/kapilw25/Evaluation_generated_images/blob/main/image_generated)**  
+      Directory containing the generated images.
+        """, unsafe_allow_html=True)
     
 # --------------------------------------------------- Tab: "Disclaimer"  --------------------------------------------------- 
 with tab4:
     st.subheader("Disclaimer")
     st.markdown("""
-- This app is for education, research and display purposes only. \n
-- All images are generated via huggingface API. \n
-- MultiModal evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
-    """)
+    - This app is for education, research and display purposes only. \n
+    - All images are generated via huggingface API. \n
+    - MultiModal evaluations are executed on local Nvidia machine [**CUDA Device: NVIDIA GeForce RTX 2080 SUPER**] with 8GB vRAM, provided by San Jose State University, CA.
+        """)
