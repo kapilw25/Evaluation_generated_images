@@ -23,3 +23,7 @@ test.ipynb
 test.py
 text2image_generation.ipynb
 vis_streamlit_mlflow.py
+image_generated/flux_chatgpt_ghibli_lora_copy
+image_generated/StableDiffusion_copy
+image_generated/StableDiffusion_Metadata_copy
+hf_debug.log

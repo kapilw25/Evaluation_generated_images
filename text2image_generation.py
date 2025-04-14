@@ -29,24 +29,35 @@ models = [
     {"provider": "hf-inference", "model": "stable-diffusion-v1-5/stable-diffusion-v1-5"}, # title={High-Resolution Image Synthesis With Latent Diffusion Models},
     {"provider": "fal-ai", "model": "stabilityai/stable-diffusion-3.5-large-turbo"}, # title={Scaling Rectified Flow Transformers for High-Resolution Image Synthesis}
     {"provider": "fal-ai", "model": "THUDM/CogView4-6B"}, # title={CogView3: Finer and Faster Text-to-Image Generation via Relay Diffusion}
-    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"}, # n/a
+    {"provider": "fal-ai", "model": "black-forest-labs/FLUX.1-dev"}, # title: n/a >> Medium.com={How does Flux work? The new image generation AI that rivals Midjourney}
     {"provider": "hf-inference", "model": "PixArt-alpha/PixArt-XL-2-1024-MS"}, # title={PixArt-$α$: Fast Training of Diffusion Transformer for Photorealistic Text-to-Image Synthesis}
     {"provider": "fal-ai", "model": "playgroundai/playground-v2.5-1024px-aesthetic"}, # title={Playground v2.5: Three Insights towards Enhancing Aesthetic Quality in Text-to-Image Generation},
     {"provider": "hf-inference", "model": "aipicasso/emi"}, # title={SDXL: Improving Latent Diffusion Models for High-Resolution Image Synthesis}, 
     {"provider": "hf-inference", "model": "ali-vilab/In-Context-LoRA"}, # title={In-Context LoRA for Diffusion Transformers}, title2={Group Diffusion Transformers are Unsupervised Multitask Learners},
     {"provider": "fal-ai", "model": "Efficient-Large-Model/Sana_Sprint_1.6B_1024px_diffusers"}, # title={SANA-Sprint: One-Step Diffusion with Continuous-Time Consistency Distillation}
-    {"provider": "replicate", "model": "ByteDance/Hyper-SD"}, # title={Hyper-SD: Trajectory Segmented Consistency Model for Efficient Image Synthesis},
+    # {"provider": "replicate", "model": "ByteDance/Hyper-SD"}, # title={Hyper-SD: Trajectory Segmented Consistency Model for Efficient Image Synthesis},
     {"provider": "fal-ai", "model": "Kwai-Kolors/Kolors"}, # title={Kolors: Effective Training of Diffusion Model for Photorealistic Text-to-Image Synthesis}
     {"provider": "fal-ai", "model": "Alpha-VLLM/Lumina-Image-2.0"}, # title={Lumina-Image 2.0: A Unified and Efficient Image Generative Framework},
+    {"provider": "hf-inference", "model": "etri-vilab/koala-700m-llava-cap"}, # title={KOALA: Self-Attention Matters in Knowledge Distillation of Latent Diffusion Models for Memory-Efficient and Fast Image Synthesis}, 
 ]
 
 
 def sanitize_model_name(name):
     mapping = { # so that model names become [CogView, Flux, Ghibli, StableDiffusion]
         "openfree/flux-chatgpt-ghibli-lora": "Ghibli",
-        "stable-diffusion-v1-5/stable-diffusion-v1-5": "StableDiffusion",
+        "stable-diffusion-v1-5/stable-diffusion-v1-5": "StblDffsn",
+        "stabilityai/stable-diffusion-3.5-large-turbo": "StblDffsn_lrg",
         "THUDM/CogView4-6B": "CogView",
-        "black-forest-labs/FLUX.1-dev": "Flux"
+        "black-forest-labs/FLUX.1-dev": "Flux",
+        "PixArt-alpha/PixArt-XL-2-1024-MS": "PixArt",
+        "playgroundai/playground-v2.5-1024px-aesthetic":"playground",
+        "aipicasso/emi": "emi",
+        "ali-vilab/In-Context-LoRA": "Context_LoRA",
+        "Efficient-Large-Model/Sana_Sprint_1.6B_1024px_diffusers": "Sana_Sprint",
+        "ByteDance/Hyper-SD": "Hyper_SD",
+        "Kwai-Kolors/Kolors":"Kolors",
+        "Alpha-VLLM/Lumina-Image-2.0": "Lumina",
+        "etri-vilab/koala-700m-llava-cap":"koala",
     }
     if name in mapping:
         return mapping[name]
