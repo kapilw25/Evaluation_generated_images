@@ -159,7 +159,7 @@ with tab2:
     merged = pd.merge(df_base, df_meta, on="BaseName", suffixes=("_base", "_meta"))
     
     # create subplots for each selected metric
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(8, 3.5))
       
     x = np.arange(len(merged))
     width = 0.3
@@ -172,7 +172,7 @@ with tab2:
     ax.set_xticks(x)
     ax.set_xticklabels(merged["BaseName"], rotation=45)
     ax.set_ylabel(selected_metric)
-    ax.set_title(f"Base vs. Metadata: {selected_metric}s")
+    ax.set_title(f"Base vs. Metadata: {selected_metric}")
     ax.legend()
   
     # dynamically adjust y-axis
@@ -184,7 +184,7 @@ with tab2:
     # define delta as 5% of data range
     delta = 0.05 * (y_max - y_min) if (y_max - y_min) != 0 else 0.1
     
-    ax.set_ylim([y_min - delta, y_max+delta])
+    ax.set_ylim([y_min - delta, y_max+ + delta])
   
     plt.tight_layout()
     st.pyplot(fig)
