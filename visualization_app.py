@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd, matplotlib.pyplot as plt, numpy as np
 from PIL import Image
 import os, ast
@@ -248,21 +249,23 @@ with tab2:
 # # --------------------------------------------------- Tab: "Project Structure"  --------------------------------------------------- 
 with tab3:
     st.subheader("System Architecture")
-    st.image("README_files/Sys_design.png", use_container_width=True)
-
-    st.subheader("Code Explanation")
-    st.markdown("""
-    - **[evaluation_metrics.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_metrics.py)**  
-      Contains functions to calculate evaluation metrics for text-to-image outputs.
-    - **[evaluation_pipeline.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/evaluation_pipeline.py)**  
-      Generates images using text-to-image models and computes evaluation metrics, saving results to CSV.
-    - **[evaluation_results.csv](https://github.com/kapilw25/Evaluation_generated_images/blob/main/results/evaluation_results.csv)**  
-      CSV file that stores all computed evaluation metrics.
-    - **[visualization_app.py](https://github.com/kapilw25/Evaluation_generated_images/blob/main/visualization_app.py)**  
-      Streamlit app that visualizes the generated images and evaluation metrics.
-    - **[image_generated/](https://github.com/kapilw25/Evaluation_generated_images/blob/main/image_generated)**  
-      Directory containing the generated images.
-        """, unsafe_allow_html=True)
+    # hyperlinked_image_path = "README_files/System_Architecture_white.png"
+    # st.image(hyperlinked_image_path, use_container_width=True)
+    
+    # st.subheader("Project Structure (clickable SGV)")
+    
+    # read SVG file
+    with open("README_files/System_Architecture_hyperlinked.svg", "r", encoding="utf-8") as file:
+        svg_content = file.read()
+        
+    # ensure links open in a new tab
+    svg_content = svg_content.replace('<a ', '<a target="_blank" ')
+    
+    # inject white background
+    svg_content = svg_content.replace('<svg', '<svg style="background-color:white;"')
+    
+    # embed as raw HTML so the <a> tags remain active
+    components.html(svg_content, height=600, scrolling=True)
     
 # --------------------------------------------------- Tab: "Disclaimer"  --------------------------------------------------- 
 with tab4:

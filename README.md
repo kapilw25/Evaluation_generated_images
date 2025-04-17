@@ -2,7 +2,7 @@
 ![visualization_app](README_files/demo.png)
 
 ## System Design
-![System Design](README_files/Sys_design.png)
+![System Design](README_files/System_Architecture_hyperlinked.svg)
 
 ## Evaluation Results
 ![evaluation_results](README_files/Evaluation_Results.png)
