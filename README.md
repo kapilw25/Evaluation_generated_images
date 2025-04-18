@@ -1,8 +1,9 @@
 ## Demo App
-![visualization_app](README_files/demo.png)
+![demo1](README_files/demo1.png)
+![demo2](README_files/demo2.png)
 
-## System Design
-![System Design](README_files/System_Architecture_hyperlinked.svg)
+## System Architecture
+![System Architecture](README_files/System_Architecture_hyperlinked.svg)
 
 ## Evaluation Results
 ![evaluation_results](README_files/Evaluation_Results.png)
