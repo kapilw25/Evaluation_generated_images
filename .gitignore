@@ -3,7 +3,7 @@ __pycache__
 .vscode
 .dvcignore
 .env
-1env
+1_env
 2env
 3env
 models

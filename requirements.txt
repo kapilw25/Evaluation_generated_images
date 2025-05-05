@@ -21,6 +21,7 @@ optimum
 Pillow>=8.0.0
 protobuf==5.29.3
 psutil
+seaborn
 sentencepiece==0.2.0
 sentence-transformers
 streamlit

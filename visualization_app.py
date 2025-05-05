@@ -7,6 +7,8 @@ import base64
 from io import BytesIO
 from PIL import Image
 import streamlit as st
+import seaborn as sns
+from pandas.plotting import parallel_coordinates
 
 st.set_page_config(layout="wide")
 
@@ -72,16 +74,95 @@ def img_to_base64(img: Image.Image) -> str:
     buf = BytesIO()
     img.save(buf, format="PNG")
     return base64.b64encode(buf.getvalue()).decode()
+  
+# -----------------------------
+# 1. Load and Prepare Data
+# -----------------------------
+@st.cache_data
+def load_and_prepare_data(url):
+    df = pd.read_csv(url)
+    metrics = [
+        "Weighted Score ⬆️",
+        "Avg Clip Cos Sim ⬆️ [GenImg vs GTimg]",
+        "Avg LPIPS ⬇️ [GenImg vs GTimg]",
+        "FID ⬇️ (Frechet inception distance)",
+        "MRR ⬆️ (Mean Reciprocal Rank)",
+        "Recall@3 ⬆️",
+        "Avg Clip Score ⬆️ [Prompt vs GenIm]"
+    ]
+
+    # filter out any “Metadata” models
+    all_models = [m for m in df['Model'].unique() if "Metadata" not in m]
+    df_filtered = df[df['Model'].isin(all_models)].reset_index(drop=True)
+
+    # normalize metrics to [0,1]
+    df_norm = df_filtered.copy()
+    for metric in metrics:
+        col = df_filtered[metric]
+        if '⬆️' in metric:
+            df_norm[metric] = (col - col.min()) / (col.max() - col.min())
+        else:
+            df_norm[metric] = (col.max() - col) / (col.max() - col.min())
+
+    return df_filtered, df_norm, metrics
+
+# -----------------------------
+# 2. Plot Functions
+# -----------------------------
+def plot_radar(df_norm, metrics, models):
+    labels = metrics
+    angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
+    angles += angles[:1]
+
+    fig, ax = plt.subplots(subplot_kw=dict(polar=True), figsize=(6,6))
+    for m in models:
+        vals = df_norm[df_norm['Model']==m][metrics].iloc[0].tolist()
+        vals += vals[:1]
+        ax.plot(angles, vals, label=m)
+        ax.fill(angles, vals, alpha=0.1)
+    ax.set_theta_offset(np.pi/2)
+    ax.set_theta_direction(-1)
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(labels, fontsize=8)
+    ax.set_yticks([0.2,0.5,0.8])
+    ax.set_ylim(0,1)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.3,1.1))
+    st.pyplot(fig)
+
+def plot_parallel(df_norm, df_filt, metrics, top_n):
+    top = df_filt.sort_values("Weighted Score ⬆️", ascending=False)['Model'].head(top_n)
+    data = df_norm[df_norm['Model'].isin(top)]
+    fig, ax = plt.subplots(figsize=(8,4))
+    parallel_coordinates(data[['Model']+metrics], 'Model', colormap=plt.get_cmap('Set2'), ax=ax)
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    st.pyplot(fig)
+
+def plot_heatmap(df_norm, df_filt, metrics, top_n):
+    top = df_filt.sort_values("Weighted Score ⬆️", ascending=False)['Model'].head(top_n)
+    data = df_norm[df_norm['Model'].isin(top)].set_index('Model')[metrics].T
+    fig, ax = plt.subplots(figsize=(8,4))
+    sns.heatmap(data, annot=True, fmt=".2f", cmap="YlGnBu", linewidths=0.5, ax=ax)
+    plt.xticks(rotation=45)
+    st.pyplot(fig)
+
+def plot_scatter(df_norm, df_filt, x_metric, y_metric, top_n):
+    top = df_filt.sort_values("Weighted Score ⬆️", ascending=False)['Model'].head(top_n)
+    data = df_norm[df_norm['Model'].isin(top)]
+    fig, ax = plt.subplots(figsize=(6,4))
+    sns.scatterplot(data=data, x=x_metric, y=y_metric, hue='Model', s=100, ax=ax)
+    for i,row in data.iterrows():
+        ax.text(row[x_metric]+0.01, row[y_metric]+0.01, row['Model'], fontsize=8)
+    st.pyplot(fig)
 
 # create tabs:
 tab1, tab2, tab3, tab4 = st.tabs([
     "Compare Images",
-    "Evaluation Metrics",
+    "Evaluation",
     "System Design",
     "Disclaimer"
 ])
 
-# --------------------------------------------------- Tab: Compare Image  --------------------------------------------------- 
 # --------------------------------------------------- Tab: Compare Image  --------------------------------------------------- 
 with tab1:        
     # Extract Unique prompts from the CSV
@@ -216,6 +297,33 @@ with tab2:
   
     plt.tight_layout()
     st.pyplot(fig)
+    st.markdown("---")
+    
+    # load once
+    CSV_URL = "https://raw.githubusercontent.com/kapilw25/Evaluation_generated_images/main/results/evaluation_results.csv"
+    df_filt, df_norm, METRICS = load_and_prepare_data(CSV_URL)
+
+    # sidebar controls
+    plot_type = st.sidebar.selectbox("Plot Type", ["Radar", "Parallel", "Heatmap", "Scatter"])
+    top_n = st.sidebar.slider("Top N Models", min_value=3, max_value=len(df_filt), value=3, step=1)
+
+    if plot_type == "Scatter":
+        x_metric = st.sidebar.selectbox("X-axis Metric", METRICS, index=0)
+        y_metric = st.sidebar.selectbox("Y-axis Metric", METRICS, index=1)
+
+    # render
+    if plot_type == "Radar":
+        models = df_filt.sort_values("Weighted Score ⬆️", ascending=False)['Model'].head(top_n).tolist()
+        plot_radar(df_norm, METRICS, models)
+
+    elif plot_type == "Parallel":
+        plot_parallel(df_norm, df_filt, METRICS, top_n)
+
+    elif plot_type == "Heatmap":
+        plot_heatmap(df_norm, df_filt, METRICS, top_n)
+
+    elif plot_type == "Scatter":
+        plot_scatter(df_norm, df_filt, x_metric, y_metric, top_n)
     
     st.markdown("---")
   
