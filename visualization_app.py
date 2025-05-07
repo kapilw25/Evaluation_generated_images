@@ -156,14 +156,15 @@ def plot_scatter(df_norm, df_filt, x_metric, y_metric, top_n):
     st.pyplot(fig)
 
 # create tabs:
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Compare Images",
     "Evaluation",
     "System Design",
+    "Model Architectures",
     "Disclaimer"
 ])
 
-# --------------------------------------------------- Tab: Compare Image  --------------------------------------------------- 
+# --------------------------------------------------- Tab: Compare Images--------------------------------------------------- 
 with tab1:        
     # Extract Unique prompts from the CSV
     prompts = df_gen_img_metadata["prompt"].unique()
@@ -249,7 +250,7 @@ with tab1:
     st.write("---")
     st.markdown("**End of Comparison**")
 
-# --------------------------------------------------- Tab: "Evaluation Metrics"  --------------------------------------------------- 
+# --------------------------------------------------- Tab: "Evaluation"  --------------------------------------------------- 
 with tab2:
 
     # create a selectbox to choose the metric for the grouped bar chart (excluding the "Model" column)
@@ -381,13 +382,9 @@ with tab2:
     }
     st.table(pd.DataFrame(explanation))
   
-# # --------------------------------------------------- Tab: "Project Structure"  --------------------------------------------------- 
+# # --------------------------------------------------- Tab: "System Design"  --------------------------------------------------- 
 with tab3:
     st.subheader("System Architecture")
-    # hyperlinked_image_path = "README_files/System_Architecture_white.png"
-    # st.image(hyperlinked_image_path, use_container_width=True)
-    
-    # st.subheader("Project Structure (clickable SGV)")
     
     # read SVG file
     with open("README_files/System_Architecture_hyperlinked.svg", "r", encoding="utf-8") as file:
@@ -402,8 +399,51 @@ with tab3:
     # embed as raw HTML so the <a> tags remain active
     components.html(svg_content, height=600, scrolling=True)
     
-# --------------------------------------------------- Tab: "Disclaimer"  --------------------------------------------------- 
+# --------------------------------------------------- Tab: "Model Architectures"  --------------------------------------------------- 
 with tab4:
+
+    # Title
+    st.subheader("T2I models architecture")
+
+    # Load image
+    image_path = "README_files/T2I_architecture.png"
+    with open(image_path, "rb") as image_file:
+        encoded_image = base64.b64encode(image_file.read()).decode()
+
+    # HTML + JS using OpenSeadragon (fixing curly braces escape)
+    components.html(
+        f"""
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/openseadragon.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/openseadragon.min.js"></script>
+
+        <div id="openseadragon1" style="width: 100vw; height: 90vh;"></div>
+        <script type="text/javascript">
+            var viewer = OpenSeadragon({{
+                id: "openseadragon1",
+                prefixUrl: "https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/images/",
+                tileSources: {{
+                    type: 'image',
+                    format: 'jpg',
+                    url: "data:image/png;base64,{encoded_image}"
+                }},
+                gestureSettingsMouse: {{
+                    clickToZoom: true,
+                    dblClickToZoom: true,
+                    flickEnabled: true,
+                    pinchToZoom: true
+                }},
+                showZoomControl: true,
+                showNavigationControl: true
+            }});
+        </script>
+        """,
+        height=800,
+        scrolling=False,
+    )
+
+    
+# --------------------------------------------------- Tab: "Disclaimer"  --------------------------------------------------- 
+with tab5:
     st.subheader("Disclaimer")
     st.markdown("""
     - This app is for education, research and display purposes only. \n
