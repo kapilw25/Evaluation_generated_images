@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this codebase, please cite the following work."
+title: "Multimodal Benchmarking and Recommendation of Text-to-Image Generation Models"
+authors:
+  - family-names: Wanaskar
+    given-names: Kapil
+  - family-names: Jena
+    given-names: Gaytri
+  - family-names: Eirinaki
+    given-names: Magdalini
+date-released: 2025-05-06
+version: "1.0"
+doi: 10.5281/zenodo.15385124
+url: https://arxiv.org/abs/2505.04650
+repository-code: https://github.com/kapilw25/Evaluation_generated_images
+license: MIT
+type: software
