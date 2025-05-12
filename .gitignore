@@ -19,7 +19,7 @@ combined_CV.py
 gdrive_creds.json
 gdrive_service_account_key.json
 improve_metrics.pdf
-gitignore_files
+git_ignore
 test.ipynb
 test.py
 Llamaindex_app.py

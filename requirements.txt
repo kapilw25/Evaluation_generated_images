@@ -1,5 +1,5 @@
 accelerate==1.0.1
-bitsandbytes==0.42.0  
+bitsandbytes 
 git+https://github.com/GaParmar/clean-fid.git
 cairosvg
 diffusers==0.32.2
